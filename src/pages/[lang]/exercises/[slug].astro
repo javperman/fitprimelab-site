@@ -1,0 +1,43 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import ExerciseLayout from '@/layouts/ExerciseLayout.astro';
+import type { Language } from '@/lib/i18n';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('exercises');
+  return entries.map((entry: CollectionEntry<'exercises'>) => ({
+    params: { lang: entry.data.language, slug: entry.data.slug },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'exercises'>;
+}
+
+const { entry } = Astro.props;
+const { lang } = Astro.params as { lang: Language };
+const { Content } = await render(entry);
+
+const datePublished = entry.data.date.toISOString().split('T')[0];
+const dateModified = entry.data.updated?.toISOString().split('T')[0];
+---
+
+<ExerciseLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  lang={lang}
+  slug={entry.data.slug}
+  translationSlugs={entry.data.translationSlugs}
+  muscles={entry.data.muscles}
+  equipment={entry.data.equipment}
+  difficulty={entry.data.difficulty}
+  image={entry.data.image}
+  steps={entry.data.steps}
+  tips={entry.data.tips}
+  relatedTools={entry.data.related_tools}
+  datePublished={datePublished}
+  dateModified={dateModified}
+>
+  <Content />
+</ExerciseLayout>

@@ -1,0 +1,29 @@
+---
+import type { Language } from '@/lib/i18n';
+import OneRMBarbellBase from './OneRMBarbellBase.astro';
+import { squat1RMTexts, squat1RMFaqs } from '@/i18n/tools/squat-1rm-calculator';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const config = {
+  storageKey: 'squat_1rm_unit',
+  exercise: 'squat',
+  keyword: 'squat 1rm calculator',
+  siteName: 'Fit Prime Lab',
+  slugs: { en: 'squat-1rm-calculator', es: 'calculadora-1rm-sentadilla', pt: 'calculadora-1rm-agachamento', ja: 'squat-1rm-keisanki' },
+  genericRM: { en: 'rm-calculator', es: 'calculadora-rm', pt: 'calculadora-rm', ja: 'rm-calculator' },
+  toolsIndexLabel: { en: 'All tools', es: 'Todas las herramientas', pt: 'Todas as ferramentas', ja: 'ツール一覧' },
+  related: [
+    { slug: { en: 'bench-press-1rm-calculator', es: 'calculadora-1rm-press-banca', pt: 'calculadora-1rm-supino', ja: 'bench-press-1rm-keisanki' }, label: { en: 'Bench Press 1RM Calculator', es: 'Calculadora 1RM Press Banca', pt: 'Calculadora 1RM Supino', ja: 'ベンチプレス 1RM 計算機' } },
+    { slug: { en: 'deadlift-1rm-calculator', es: 'calculadora-1rm-peso-muerto', pt: 'calculadora-1rm-levantamento-terra', ja: 'deadlift-1rm-keisanki' }, label: { en: 'Deadlift 1RM Calculator', es: 'Calculadora 1RM Peso Muerto', pt: 'Calculadora 1RM Levantamento Terra', ja: 'デッドリフト 1RM 計算機' } },
+  ],
+  faqs: squat1RMFaqs,
+  texts: squat1RMTexts,
+} as const;
+---
+
+<OneRMBarbellBase lang={lang} config={config} />

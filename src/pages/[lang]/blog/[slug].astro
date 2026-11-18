@@ -1,0 +1,41 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BlogLayout from '@/layouts/BlogLayout.astro';
+import type { Language } from '@/lib/i18n';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('blog');
+
+  return entries.map((entry: CollectionEntry<'blog'>) => ({
+    params: { lang: entry.data.language, slug: entry.data.slug },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'blog'>;
+}
+
+const { entry } = Astro.props;
+const { lang } = Astro.params as { lang: Language };
+const { Content } = await render(entry);
+
+const datePublished = entry.data.date.toISOString().split('T')[0];
+const dateModified = entry.data.updated?.toISOString().split('T')[0];
+---
+
+<BlogLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  lang={lang}
+  author={entry.data.author}
+  datePublished={datePublished}
+  dateModified={dateModified}
+  image={entry.data.image}
+  slug={entry.data.slug}
+  translationSlugs={entry.data.translationSlugs}
+  tldr={entry.data.tldr}
+  relatedTools={entry.data.related_tools}
+>
+  <Content />
+</BlogLayout>

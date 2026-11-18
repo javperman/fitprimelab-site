@@ -1,0 +1,49 @@
+---
+// Tool Layout Component
+import BaseLayout from './BaseLayout.astro';
+import SEOHead from '@/components/SEOHead.astro';
+import { getNavTranslations, type Language } from '@/lib/i18n';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: Language;
+  slugs?: Record<Language, string>;
+  image?: string;
+}
+
+const { title, description, lang, slugs, image } = Astro.props;
+
+const navTrans = getNavTranslations(lang);
+const homeLabels: Record<Language, string> = { en: 'Home', es: 'Inicio', pt: 'Início', ja: 'ホーム' };
+---
+
+<html lang={lang}>
+  <SEOHead
+    title={title}
+    description={description}
+    lang={lang}
+    slugs={slugs}
+    route="/tools/[slug]"
+    image={image}
+    type="tool"
+  />
+  <body>
+    <BaseLayout
+      title={title}
+      description={description}
+      lang={lang}
+      slugs={slugs}
+      routeType="tools"
+    >
+      <nav aria-label="breadcrumb" style="margin-bottom: var(--space-lg); font-size: 0.8125rem;">
+        <ol style="display: flex; flex-wrap: wrap; gap: 0.375rem; align-items: center; list-style: none; padding: 0; margin: 0;">
+          <li><a href={`/${lang}/`} style="color: var(--color-text-secondary); text-decoration: none;">{homeLabels[lang]}</a></li>
+          <li style="color: var(--color-text-light);" aria-hidden="true">›</li>
+          <li><a href={`/${lang}/tools`} style="color: var(--color-text-secondary); text-decoration: none;">{navTrans.tools}</a></li>
+        </ol>
+      </nav>
+      <slot />
+    </BaseLayout>
+  </body>
+</html>

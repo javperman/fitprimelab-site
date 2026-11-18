@@ -1,0 +1,138 @@
+---
+// Modern Input component
+interface Props {
+  type?: 'text' | 'number' | 'email' | 'password' | 'tel' | 'url';
+  name?: string;
+  id?: string;
+  placeholder?: string;
+  value?: string | number;
+  label?: string;
+  required?: boolean;
+  disabled?: boolean;
+  step?: string | number;
+  min?: string | number;
+  max?: string | number;
+  class?: string;
+  error?: string;
+  helpText?: string;
+}
+
+const {
+  type = 'text',
+  name = '',
+  id = name,
+  placeholder = '',
+  value = '',
+  label = '',
+  required = false,
+  disabled = false,
+  step = undefined,
+  min = undefined,
+  max = undefined,
+  class: className = '',
+  error = '',
+  helpText = ''
+} = Astro.props;
+---
+
+<div class="input-group">
+  {label && (
+    <label for={id} class="input-label">
+      {label}
+      {required && <span class="required">*</span>}
+    </label>
+  )}
+  
+  <input
+    type={type}
+    id={id}
+    name={name}
+    placeholder={placeholder}
+    value={value}
+    required={required}
+    disabled={disabled}
+    step={step}
+    min={min}
+    max={max}
+    class={`input ${error ? 'input--error' : ''} ${className}`}
+  />
+  
+  {error && <span class="input-error">{error}</span>}
+  {helpText && !error && <span class="input-help">{helpText}</span>}
+</div>
+
+<style scoped>
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    width: 100%;
+  }
+
+  .input-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .required {
+    color: var(--color-orange);
+  }
+
+  .input {
+    width: 100%;
+    padding: var(--space-md);
+    font-size: 1rem;
+    font-family: inherit;
+    
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    
+    color: var(--color-text-primary);
+    transition: border-color var(--transition-smooth), box-shadow var(--transition-smooth);
+  }
+
+  .input::placeholder {
+    color: var(--color-text-secondary);
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: var(--color-green);
+    box-shadow: var(--shadow-md);
+  }
+
+  .input:hover:not(:disabled) {
+    border-color: var(--color-text-secondary);
+    box-shadow: var(--shadow-md);
+  }
+
+  .input:disabled {
+    background-color: var(--color-bg-secondary);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .input--error {
+    border-color: #ef4444;
+  }
+
+  .input--error:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+  }
+
+  .input-error {
+    font-size: 0.85rem;
+    color: #ef4444;
+    font-weight: 500;
+  }
+
+  .input-help {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+  }
+</style>

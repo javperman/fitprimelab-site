@@ -1,0 +1,98 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { getAllLanguages, type Language } from '@/lib/i18n';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SEOHead from '@/components/SEOHead.astro';
+import Card from '@/components/Card.astro';
+
+export function getStaticPaths() {
+  return getAllLanguages().map((lang: Language) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+
+const allExercises = await getCollection('exercises');
+const exercises = allExercises.filter((e: CollectionEntry<'exercises'>) => e.data.language === lang);
+
+const titles: Record<Language, string> = {
+  en: 'Exercise Guides',
+  es: 'Guías de Ejercicios',
+  pt: 'Guias de Exercícios',
+  ja: 'エクササイズガイド',
+};
+
+const descriptions: Record<Language, string> = {
+  en: 'Step-by-step technique guides for strength exercises — with HowTo instructions, common mistakes and programming notes.',
+  es: 'Guías técnicas paso a paso para ejercicios de fuerza — con instrucciones, errores frecuentes y notas de programación.',
+  pt: 'Guias técnicos passo a passo para exercícios de força — com instruções, erros comuns e notas de programação.',
+  ja: '筋力トレーニング種目の技術ガイド — 手順・よくあるミス・プログラムノート付き。',
+};
+
+const homeLabels: Record<Language, string> = { en: 'Home', es: 'Inicio', pt: 'Início', ja: 'ホーム' };
+
+const openLabels: Record<Language, string> = {
+  en: 'View guide →',
+  es: 'Ver guía →',
+  pt: 'Ver guia →',
+  ja: 'ガイドを見る →',
+};
+
+const difficultyNames: Record<string, Record<Language, string>> = {
+  beginner: { en: 'Beginner', es: 'Principiante', pt: 'Iniciante', ja: '初心者' },
+  intermediate: { en: 'Intermediate', es: 'Intermedio', pt: 'Intermediário', ja: '中級' },
+  advanced: { en: 'Advanced', es: 'Avanzado', pt: 'Avançado', ja: '上級' },
+};
+
+const difficultyColors: Record<string, string> = {
+  beginner: 'var(--color-green)',
+  intermediate: 'var(--color-blue)',
+  advanced: 'var(--color-orange)',
+};
+---
+
+<html lang={lang}>
+  <SEOHead title={titles[lang]} description={descriptions[lang]} lang={lang} type="website" />
+  <body>
+    <BaseLayout title={titles[lang]} description={descriptions[lang]} lang={lang}>
+      <!-- Breadcrumbs -->
+      <nav aria-label="breadcrumb" style="margin-bottom: var(--space-lg); font-size: 0.8125rem;">
+        <ol style="display: flex; gap: 0.375rem; align-items: center; list-style: none; padding: 0; margin: 0;">
+          <li><a href={`/${lang}/`} style="color: var(--color-text-secondary); text-decoration: none;">{homeLabels[lang]}</a></li>
+          <li style="color: var(--color-text-light);" aria-hidden="true">›</li>
+          <li style="color: var(--color-text-primary); font-weight: 500;" aria-current="page">{titles[lang]}</li>
+        </ol>
+      </nav>
+
+      <h1 style="margin-bottom: var(--space-md);">{titles[lang]}</h1>
+      <p style="color: var(--color-text-secondary); font-size: 1.0625rem; margin-bottom: var(--space-2xl);">{descriptions[lang]}</p>
+
+      {exercises.length > 0 ? (
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-lg);">
+          {exercises.map((ex: CollectionEntry<'exercises'>) => (
+            <Card hover>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: var(--space-md);">
+                {ex.data.difficulty && (
+                  <span style={`font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 999px; background: rgba(0,0,0,0.04); color: ${difficultyColors[ex.data.difficulty]};`}>
+                    {difficultyNames[ex.data.difficulty]?.[lang] ?? ex.data.difficulty}
+                  </span>
+                )}
+                {ex.data.muscles.slice(0, 2).map((m: string) => (
+                  <span style="font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 999px; background: rgba(16,185,129,0.08); color: var(--color-green);">{m}</span>
+                ))}
+              </div>
+              <h3 style="margin: 0 0 var(--space-sm) 0; font-size: 1.0625rem;">
+                <a href={`/${lang}/exercises/${ex.data.slug}`} style="color: var(--color-text-primary); text-decoration: none;">{ex.data.title}</a>
+              </h3>
+              <p style="color: var(--color-text-secondary); font-size: 0.9375rem; line-height: 1.6; margin: 0 0 var(--space-md) 0;">{ex.data.description.slice(0, 120)}…</p>
+              <a href={`/${lang}/exercises/${ex.data.slug}`} style="font-size: 0.875rem; font-weight: 500; color: var(--color-green); text-decoration: none;">{openLabels[lang]}</a>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <p style="color: var(--color-text-secondary);">
+          {lang === 'en' ? 'No exercises yet. Check back soon.' : lang === 'es' ? 'Sin ejercicios todavía. Vuelve pronto.' : lang === 'pt' ? 'Nenhum exercício ainda. Volte em breve.' : 'まもなく公開予定です。'}
+        </p>
+      )}
+    </BaseLayout>
+  </body>
+</html>

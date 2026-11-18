@@ -1,0 +1,22 @@
+{
+  "slug": {
+    "en": "deadlift-1rm-calculator",
+    "es": "calculadora-1rm-peso-muerto",
+    "pt": "calculadora-1rm-levantamento-terra",
+    "ja": "deadlift-1rm-keisanki"
+  },
+  "name": {
+    "en": "Deadlift 1RM Calculator — Estimate Your Max",
+    "es": "Calculadora 1RM Peso Muerto — Calcula tu máximo",
+    "pt": "Calculadora 1RM Terra — Estime seu máximo",
+    "ja": "デッドリフト 1RM 計算機 — 最大重量を正確に推定"
+  },
+  "description": {
+    "en": "Free deadlift 1RM calculator with Epley, Brzycki, Lombardi and O'Conner formulas, RPE correction, training-load percentages and strength standards. Track your pull progress accurately.",
+    "es": "Calculadora 1RM de peso muerto gratuita con fórmulas Epley, Brzycki, Lombardi y O'Conner, corrección por RPE, porcentajes de carga y estándares de fuerza. Mide tu progreso con precisión.",
+    "pt": "Calculadora 1RM de levantamento terra gratuita com fórmulas Epley, Brzycki, Lombardi e O'Conner, correção por RPE, percentuais de carga e padrões de força. Acompanhe seu terra com precisão.",
+    "ja": "Epley・Brzycki・Lombardi・O'Connerの4公式とRPE補正に対応した無料のデッドリフト1RM計算機。%1RMの重量表と筋力基準で進捗を正確に管理できます。"
+  },
+  "category": "strength",
+  "tags": ["strength", "1rm", "deadlift", "powerlifting"]
+}

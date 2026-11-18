@@ -1,0 +1,21 @@
+---
+// Root redirect to default language
+import { getDefaultLanguage } from '@/lib/i18n';
+
+const defaultLang = getDefaultLanguage();
+---
+
+<!doctype html>
+<html lang={defaultLang}>
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting...</title>
+    <meta http-equiv="refresh" content={`0; url=/${defaultLang}/`} />
+    <link rel="canonical" href={`https://fitprimelab.com/${defaultLang}/`} />
+  </head>
+  <body>
+    <p>
+      Redirecting to <a href={`/${defaultLang}/`}>{`/${defaultLang}/`}</a>
+    </p>
+  </body>
+</html>

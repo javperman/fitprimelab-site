@@ -1,0 +1,170 @@
+---
+// Homepage
+import { getDefaultLanguage, getAllLanguages } from '@/lib/i18n';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SEOHead from '@/components/SEOHead.astro';
+import Container from '@/components/Container.astro';
+import Card from '@/components/Card.astro';
+import Button from '@/components/Button.astro';
+import Section from '@/components/Section.astro';
+import Logo from '@/components/Logo.astro';
+import type { Language } from '@/lib/i18n';
+
+export function getStaticPaths() {
+  return getAllLanguages().map((lang: Language) => ({
+    params: { lang },
+  }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+
+if (!lang) {
+  return Astro.redirect(`/${getDefaultLanguage()}/`);
+}
+
+const titles: Record<Language, string> = {
+  en: 'Fit Prime Lab - Fitness Tools & Resources',
+  es: 'Fit Prime Lab - Herramientas Fitness',
+  pt: 'Fit Prime Lab - Ferramentas de Fitness',
+  ja: 'Fit Prime Lab - フィットネスツール',
+};
+
+const descriptions: Record<Language, string> = {
+  en: 'Premium fitness tools, calculators, and guides to optimize your training.',
+  es: 'Herramientas fitness premium, calculadoras y guías para optimizar tu entrenamiento.',
+  pt: 'Ferramentas de fitness premium, calculadoras e guias para otimizar seu treinamento.',
+  ja: 'プレミアムフィットネスツール、計算機、トレーニング最適化ガイド。',
+};
+
+const content: Record<Language, { cta: string; explore: string; read: string; why: string; why_desc: string; item1: string; item2: string; item3: string; item4: string; featured: string; coming: string }> = {
+  en: {
+    cta: 'Premium fitness tools, calculators, and guides to optimize your training.',
+    explore: 'Explore Tools',
+    read: 'Read Blog',
+    why: 'Why Fit Prime Lab?',
+    why_desc: 'Trusted by fitness professionals',
+    item1: 'Professional-grade fitness tools',
+    item2: 'Science-backed content',
+    item3: 'Available in 4 languages',
+    item4: 'Free & always will be',
+    featured: 'Featured Tools',
+    coming: 'Coming soon...',
+  },
+  es: {
+    cta: 'Herramientas fitness premium, calculadoras y guías para optimizar tu entrenamiento.',
+    explore: 'Ver Herramientas',
+    read: 'Leer Blog',
+    why: '¿Por qué Fit Prime Lab?',
+    why_desc: 'Confiado por profesionales del fitness',
+    item1: 'Herramientas fitness de grado profesional',
+    item2: 'Contenido respaldado por ciencia',
+    item3: 'Disponible en 4 idiomas',
+    item4: 'Gratuito y siempre lo será',
+    featured: 'Herramientas Destacadas',
+    coming: 'Próximamente...',
+  },
+  pt: {
+    cta: 'Ferramentas de fitness premium, calculadoras e guias para otimizar seu treinamento.',
+    explore: 'Explorar Ferramentas',
+    read: 'Ler Blog',
+    why: 'Por que Fit Prime Lab?',
+    why_desc: 'Confiado por profissionais de fitness',
+    item1: 'Ferramentas de fitness de nível profissional',
+    item2: 'Conteúdo apoiado por ciência',
+    item3: 'Disponível em 4 idiomas',
+    item4: 'Grátis e sempre será',
+    featured: 'Ferramentas em Destaque',
+    coming: 'Em breve...',
+  },
+  ja: {
+    cta: 'プレミアムフィットネスツール、計算機、トレーニング最適化ガイド。',
+    explore: 'ツールを探索',
+    read: 'ブログを読む',
+    why: 'なぜFit Prime Lab？',
+    why_desc: 'フィットネス専門家に信頼されています',
+    item1: 'プログレード フィットネスツール',
+    item2: '科学的根拠のあるコンテンツ',
+    item3: '4言語で利用可能',
+    item4: '無料で常に無料',
+    featured: 'おすすめツール',
+    coming: '近日公開予定...',
+  },
+};
+
+const c = content[lang];
+---
+
+<html lang={lang}>
+  <SEOHead
+    title={titles[lang]}
+    description={descriptions[lang]}
+    lang={lang}
+    type="website"
+  />
+  <body>
+    <BaseLayout title={titles[lang]} description={descriptions[lang]} lang={lang}>
+      <Container>
+        <!-- Hero Section -->
+        <Section>
+          <div class="hero-content" style="text-align: center; padding: var(--space-xl) 0;">
+            <div style="margin-bottom: var(--space-lg);">
+              <Logo width={320} height={240} alt="Fit Prime Lab Logo" responsive={true} />
+            </div>
+            <p style="font-size: 1.1rem; color: var(--color-text-secondary); margin-bottom: var(--space-2xl); max-width: 600px; margin-left: auto; margin-right: auto;">
+              {c.cta}
+            </p>
+            <div style="display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap;">
+              <Button variant="primary" size="lg">
+                <a href={`/${lang}/tools`} style="color: white; text-decoration: none;">{c.explore}</a>
+              </Button>
+              <Button variant="ghost" size="lg">
+                <a href={`/${lang}/blog`} style="color: var(--color-blue); text-decoration: none;">{c.read}</a>
+              </Button>
+            </div>
+          </div>
+        </Section>
+
+        <style is:global scoped>
+          .hero-content {
+            animation: fadeIn 0.8s ease forwards;
+          }
+        </style>
+
+        <!-- Features Section -->
+        <Section background="light" title={c.why}>
+          <div class="features-grid">
+            {[c.item1, c.item2, c.item3, c.item4].map((item) => (
+              <Card hover>
+                <p style="margin: 0; font-weight: 500; font-size: 0.95rem;">{item}</p>
+              </Card>
+            ))}
+          </div>
+        </Section>
+
+        <style>
+          .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--space-lg);
+          }
+
+          .features-grid :global(.card:nth-child(1)) {
+            animation-delay: 0.1s;
+          }
+
+          .features-grid :global(.card:nth-child(2)) {
+            animation-delay: 0.2s;
+          }
+
+          .features-grid :global(.card:nth-child(3)) {
+            animation-delay: 0.3s;
+          }
+
+          .features-grid :global(.card:nth-child(4)) {
+            animation-delay: 0.4s;
+          }
+        </style>
+      </Container>
+    </BaseLayout>
+  </body>
+</html>

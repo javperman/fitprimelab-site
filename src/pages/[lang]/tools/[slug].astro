@@ -1,0 +1,229 @@
+---
+// Individual tool page
+import { getAllLanguages, type Language, getRMTranslation } from '@/lib/i18n';
+import { getTools } from '@/lib/tools';
+import ToolLayout from '@/layouts/ToolLayout.astro';
+import RMCalculatorIsland from '@/components/RMCalculatorIsland.astro';
+import Card from '@/components/Card.astro';
+import FFMICalculator from '@/components/tools/FFMICalculator.astro';
+import WilksCalculator from '@/components/tools/WilksCalculator.astro';
+import BenchPress1RMCalculator from '@/components/tools/BenchPress1RMCalculator.astro';
+import Squat1RMCalculator from '@/components/tools/Squat1RMCalculator.astro';
+import Deadlift1RMCalculator from '@/components/tools/Deadlift1RMCalculator.astro';
+import PullUp1RMCalculator from '@/components/tools/PullUp1RMCalculator.astro';
+import Dips1RMCalculator from '@/components/tools/Dips1RMCalculator.astro';
+
+export async function getStaticPaths() {
+  const tools = await getTools();
+  const languages = getAllLanguages();
+  
+  const paths = [];
+  
+  // Generate one path per tool per language
+  for (const tool of tools) {
+    for (const lang of languages) {
+      const slug = tool.slug[lang];
+      paths.push({
+        params: { lang, slug },
+        props: { tool }
+      });
+    }
+  }
+  
+  return paths;
+}
+
+interface Props {
+  tool: any;
+}
+
+const { lang, slug } = Astro.params as { lang: Language; slug: string };
+const { tool } = Astro.props;
+
+// Safety check - should never happen with proper getStaticPaths
+if (!tool) {
+  return Astro.redirect(`/${lang}/tools`);
+}
+
+// JSON-LD schemas for the RM Calculator (other calculators define schemas in their own components)
+const rmAppSchema = tool.slug.en === 'rm-calculator' ? {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: tool.name[lang],
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  inLanguage: lang,
+  description: tool.description[lang],
+  url: `https://fitprimelab.com/${lang}/tools/${tool.slug[lang]}`,
+} : null;
+
+const rmFaqSchema = tool.slug.en === 'rm-calculator' ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    { '@type': 'Question', name: getRMTranslation('rm.faqQ1', lang), acceptedAnswer: { '@type': 'Answer', text: getRMTranslation('rm.faqA1', lang) } },
+    { '@type': 'Question', name: getRMTranslation('rm.faqQ2', lang), acceptedAnswer: { '@type': 'Answer', text: getRMTranslation('rm.faqA2', lang) } },
+    { '@type': 'Question', name: getRMTranslation('rm.faqQ3', lang), acceptedAnswer: { '@type': 'Answer', text: getRMTranslation('rm.faqA3', lang) } },
+    { '@type': 'Question', name: getRMTranslation('rm.faqQ4', lang), acceptedAnswer: { '@type': 'Answer', text: getRMTranslation('rm.faqA4', lang) } },
+    { '@type': 'Question', name: getRMTranslation('rm.faqQ5', lang), acceptedAnswer: { '@type': 'Answer', text: getRMTranslation('rm.faqA5', lang) } },
+  ],
+} : null;
+
+---
+
+<ToolLayout
+  title={tool.name[lang]}
+  description={tool.description[lang]}
+  lang={lang}
+  slugs={tool.slug}
+  image={tool.image}
+>
+  {rmAppSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(rmAppSchema)} />}
+  {rmFaqSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(rmFaqSchema)} />}
+  {tool.slug.en === 'rm-calculator' && (
+    <>
+      <!-- Hero Section -->
+      <section style="margin-bottom: var(--space-xl);">
+        <h1 style="margin-top: 0; margin-bottom: var(--space-md); background: linear-gradient(135deg, var(--color-green), var(--color-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          {tool.name[lang]}
+        </h1>
+        <p style="color: var(--color-text-secondary); font-size: 1.125rem; max-width: 600px;">
+          {tool.description[lang]}
+        </p>
+      </section>
+
+      <!-- Calculator Component -->
+      <section style="margin-bottom: var(--space-xl);">
+        <RMCalculatorIsland lang={lang} />
+      </section>
+
+      <!-- Practical Context Section -->
+      <section style="margin-bottom: var(--space-xl); padding: var(--space-lg); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(59, 130, 246, 0.05)); border-radius: 12px; border-left: 4px solid var(--color-green);">
+        <h2 style="margin-top: 0;">{getRMTranslation('rm.practical', lang)}</h2>
+        <p style="color: var(--color-text-primary); line-height: 1.8; font-size: 1.0625rem; margin-bottom: 0;">
+          {getRMTranslation('rm.practicalContext', lang)}
+        </p>
+      </section>
+
+      <!-- What is 1RM Section -->
+      <section style="margin-bottom: var(--space-xl);">
+        <h2>{getRMTranslation('rm.whatIs', lang)}</h2>
+        <p style="color: var(--color-text-primary); line-height: 1.8; font-size: 1.0625rem;">
+          {getRMTranslation('rm.whatIsDesc', lang)}
+        </p>
+      </section>
+
+      <!-- How to Calculate 1RM Section -->
+      <section style="margin-bottom: var(--space-xl);">
+        <h2>{getRMTranslation('rm.howToCalculate', lang)}</h2>
+        <p style="color: var(--color-text-primary); line-height: 1.8; font-size: 1.0625rem;">
+          {getRMTranslation('rm.howToCalculateDesc', lang)}
+        </p>
+      </section>
+
+      <!-- When to Use Each Formula Section -->
+      <section style="margin-bottom: var(--space-xl);">
+        <h2>{getRMTranslation('rm.whenUseTitle', lang)}</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-lg); margin-bottom: var(--space-xl);">
+          <Card hover>
+            <h4 style="margin-top: 0; color: var(--color-blue);">{getRMTranslation('rm.epleyFormula', lang)}</h4>
+            <p style="color: var(--color-text-secondary); line-height: 1.6; margin: 0;">
+              {getRMTranslation('rm.epleyWhen', lang)}
+            </p>
+          </Card>
+          <Card hover>
+            <h4 style="margin-top: 0; color: var(--color-orange);">{getRMTranslation('rm.brzickiFormula', lang)}</h4>
+            <p style="color: var(--color-text-secondary); line-height: 1.6; margin: 0;">
+              {getRMTranslation('rm.brzickiWhen', lang)}
+            </p>
+          </Card>
+          <Card hover>
+            <h4 style="margin-top: 0; color: var(--color-green);">{getRMTranslation('rm.lombardiFormula', lang)}</h4>
+            <p style="color: var(--color-text-secondary); line-height: 1.6; margin: 0;">
+              {getRMTranslation('rm.lombardiWhen', lang)}
+            </p>
+          </Card>
+          <Card hover gradient>
+            <h4 style="margin-top: 0; color: var(--color-green);">{getRMTranslation('rm.hybridFormula', lang)}</h4>
+            <p style="color: var(--color-text-secondary); line-height: 1.6; margin: 0;">
+              {getRMTranslation('rm.hybridWhen', lang)}
+            </p>
+          </Card>
+        </div>
+
+        <!-- Precision Warning -->
+        <div style="padding: var(--space-lg); background: rgba(249, 115, 22, 0.08); border-radius: 8px; border-left: 4px solid var(--color-orange);">
+          <p style="margin: 0; color: var(--color-text-primary); line-height: 1.6;">
+            {getRMTranslation('rm.precisionWarning', lang)}
+          </p>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section style="margin-bottom: var(--space-xl);">
+        <h2>{getRMTranslation('rm.faq', lang)}</h2>
+        
+        <div style="display: grid; gap: var(--space-lg);">
+          <!-- FAQ Item 1 -->
+          <div style="border-left: 4px solid var(--color-green); padding-left: var(--space-lg); padding-top: var(--space-md); padding-bottom: var(--space-md);">
+            <h4 style="margin-top: 0; margin-bottom: 0.5rem; color: var(--color-text-primary);">
+              {getRMTranslation('rm.faqQ1', lang)}
+            </h4>
+            <p style="color: var(--color-text-secondary); line-height: 1.6; margin-top: 0;">
+              {getRMTranslation('rm.faqA1', lang)}
+            </p>
+          </div>
+
+          <!-- FAQ Item 2 -->
+          <div style="border-left: 4px solid var(--color-blue); padding-left: var(--space-lg); padding-top: var(--space-md); padding-bottom: var(--space-md);">
+            <h4 style="margin-top: 0; margin-bottom: 0.5rem; color: var(--color-text-primary);">
+              {getRMTranslation('rm.faqQ2', lang)}
+            </h4>
+            <p style="color: var(--color-text-secondary); line-height: 1.6; margin-top: 0;">
+              {getRMTranslation('rm.faqA2', lang)}
+            </p>
+          </div>
+
+          <!-- FAQ Item 3 -->
+          <div style="border-left: 4px solid var(--color-orange); padding-left: var(--space-lg); padding-top: var(--space-md); padding-bottom: var(--space-md);">
+            <h4 style="margin-top: 0; margin-bottom: 0.5rem; color: var(--color-text-primary);">
+              {getRMTranslation('rm.faqQ3', lang)}
+            </h4>
+            <p style="color: var(--color-text-secondary); line-height: 1.6; margin-top: 0;">
+              {getRMTranslation('rm.faqA3', lang)}
+            </p>
+          </div>
+
+          <!-- FAQ Item 4 -->
+          <div style="border-left: 4px solid var(--color-green); padding-left: var(--space-lg); padding-top: var(--space-md); padding-bottom: var(--space-md);">
+            <h4 style="margin-top: 0; margin-bottom: 0.5rem; color: var(--color-text-primary);">
+              {getRMTranslation('rm.faqQ4', lang)}
+            </h4>
+            <p style="color: var(--color-text-secondary); line-height: 1.6; margin-top: 0;">
+              {getRMTranslation('rm.faqA4', lang)}
+            </p>
+          </div>
+
+          <!-- FAQ Item 5 -->
+          <div style="border-left: 4px solid var(--color-blue); padding-left: var(--space-lg); padding-top: var(--space-md); padding-bottom: var(--space-md);">
+            <h4 style="margin-top: 0; margin-bottom: 0.5rem; color: var(--color-text-primary);">
+              {getRMTranslation('rm.faqQ5', lang)}
+            </h4>
+            <p style="color: var(--color-text-secondary); line-height: 1.6; margin-top: 0;">
+              {getRMTranslation('rm.faqA5', lang)}
+            </p>
+          </div>
+        </div>
+      </section>
+    </>
+  )}
+
+  {tool.slug.en === 'ffmi-calculator' && <FFMICalculator lang={lang} tool={tool} />}
+  {tool.slug.en === 'wilks-calculator' && <WilksCalculator lang={lang} tool={tool} />}
+  {tool.slug.en === 'bench-press-1rm-calculator' && <BenchPress1RMCalculator lang={lang} />}
+  {tool.slug.en === 'squat-1rm-calculator' && <Squat1RMCalculator lang={lang} />}
+  {tool.slug.en === 'deadlift-1rm-calculator' && <Deadlift1RMCalculator lang={lang} />}
+  {tool.slug.en === 'pull-up-1rm-calculator' && <PullUp1RMCalculator lang={lang} />}
+  {tool.slug.en === 'dips-1rm-calculator' && <Dips1RMCalculator lang={lang} />}
+
+</ToolLayout>

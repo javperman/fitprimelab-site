@@ -1,0 +1,22 @@
+{
+  "slug": {
+    "en": "squat-1rm-calculator",
+    "es": "calculadora-1rm-sentadilla",
+    "pt": "calculadora-1rm-agachamento",
+    "ja": "squat-1rm-keisanki"
+  },
+  "name": {
+    "en": "Squat 1RM Calculator — Estimate Your Max",
+    "es": "Calculadora 1RM Sentadilla — Calcula tu máximo",
+    "pt": "Calculadora 1RM Agachamento — Estime seu máximo",
+    "ja": "スクワット 1RM 計算機 — 最大重量を正確に推定"
+  },
+  "description": {
+    "en": "Free squat 1RM calculator with Epley, Brzycki, Lombardi and O'Conner formulas, RPE adjustment, training-load percentages and strength standards. Program your squat sessions with confidence.",
+    "es": "Calculadora 1RM de sentadilla gratuita con fórmulas Epley, Brzycki, Lombardi y O'Conner, ajuste por RPE, porcentajes de carga y estándares de fuerza. Programa tus sesiones de pierna con seguridad.",
+    "pt": "Calculadora 1RM de agachamento gratuita com fórmulas Epley, Brzycki, Lombardi e O'Conner, ajuste por RPE, percentuais de carga e padrões de força. Programe seu treino de perna com confiança.",
+    "ja": "Epley・Brzycki・Lombardi・O'Connerの4公式とRPE補正に対応した無料のスクワット1RM計算機。%1RMの重量表と筋力基準でセッション設計を正確に行えます。"
+  },
+  "category": "strength",
+  "tags": ["strength", "1rm", "squat", "powerlifting"]
+}

@@ -1,0 +1,173 @@
+---
+// Tools index page
+import { getAllLanguages } from '@/lib/i18n';
+import { getTools } from '@/lib/tools';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SEOHead from '@/components/SEOHead.astro';
+import Card from '@/components/Card.astro';
+import type { Language } from '@/lib/i18n';
+
+export function getStaticPaths() {
+  return getAllLanguages().map((lang: Language) => ({
+    params: { lang },
+  }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+
+// Get all tools
+const tools = await getTools();
+
+const titles: Record<Language, string> = {
+  en: 'Fitness Tools & Calculators',
+  es: 'Herramientas Fitness & Calculadoras',
+  pt: 'Ferramentas de Fitness & Calculadoras',
+  ja: 'フィットネスツールと計算機',
+};
+
+const descriptions: Record<Language, string> = {
+  en: 'Comprehensive fitness tools to help you reach your goals faster.',
+  es: 'Herramientas fitness completas para ayudarte a alcanzar tus objetivos más rápido.',
+  pt: 'Ferramentas de fitness completas para ajudá-lo a atingir seus objetivos mais rápido.',
+  ja: 'あなたが目標をより早く達成するのを支援する包括的なフィットネスツール。',
+};
+
+// Category definitions with translations
+const categories = {
+  strength: {
+    en: 'Strength Training',
+    es: 'Entrenamiento de Fuerza',
+    pt: 'Treinamento de Força',
+    ja: '筋力トレーニング',
+  },
+  nutrition: {
+    en: 'Nutrition',
+    es: 'Nutrición',
+    pt: 'Nutrição',
+    ja: '栄養',
+  },
+  cardio: {
+    en: 'Cardio',
+    es: 'Cardio',
+    pt: 'Cardio',
+    ja: 'カーディオ',
+  },
+  health: {
+    en: 'Health Metrics',
+    es: 'Métricas de Salud',
+    pt: 'Métricas de Saúde',
+    ja: '健康指標',
+  },
+};
+
+// Group tools by category
+const toolsByCategory: Record<string, any[]> = {};
+tools.forEach((tool) => {
+  if (!toolsByCategory[tool.category]) {
+    toolsByCategory[tool.category] = [];
+  }
+  toolsByCategory[tool.category].push(tool);
+});
+---
+
+<html lang={lang}>
+  <SEOHead
+    title={titles[lang]}
+    description={descriptions[lang]}
+    lang={lang}
+    type="website"
+  />
+  <body>
+    <BaseLayout title={titles[lang]} description={descriptions[lang]} lang={lang}>
+      <h1>{titles[lang]}</h1>
+      <p>{descriptions[lang]}</p>
+
+      <!-- Featured Tools Section -->
+      <section style="margin-top: 2rem;">
+        <h2>
+          {lang === 'en'
+            ? 'Featured Tools'
+            : lang === 'es'
+              ? 'Herramientas Destacadas'
+              : lang === 'pt'
+                ? 'Ferramentas em Destaque'
+                : 'おすすめツール'}
+        </h2>
+        
+        {tools.length > 0 ? (
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+            {tools.map((tool) => (
+              <Card hover={true}>
+                <h3 style="margin-top: 0; margin-bottom: 0.5rem;">
+                  <a href={`/${lang}/tools/${tool.slug[lang]}`} style="color: var(--color-green); text-decoration: none;">
+                    {tool.name[lang]}
+                  </a>
+                </h3>
+                <p style="color: var(--color-text-secondary); margin: 0.5rem 0 1rem 0; line-height: 1.6;">
+                  {tool.description[lang]}
+                </p>
+                <a href={`/${lang}/tools/${tool.slug[lang]}`} style="color: var(--color-blue); font-weight: 500; text-decoration: none;">
+                  {lang === 'en'
+                    ? 'Open Tool →'
+                    : lang === 'es'
+                      ? 'Abrir Herramienta →'
+                      : lang === 'pt'
+                        ? 'Abrir Ferramenta →'
+                        : 'ツールを開く →'}
+                </a>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <p style="color: #666;">
+            {lang === 'en'
+              ? 'No tools available yet. Check back soon!'
+              : lang === 'es'
+                ? '¡Sin herramientas disponibles todavía. ¡Vuelve pronto!'
+                : lang === 'pt'
+                  ? 'Nenhuma ferramenta disponível ainda. Volte em breve!'
+                  : 'しばらくお待ちください。'}
+          </p>
+        )}
+      </section>
+
+      <!-- Tools by Category Sections -->
+      {Object.entries(categories).map(([categoryKey, categoryNames]) => {
+        const categoryTools = toolsByCategory[categoryKey] || [];
+        
+        if (categoryTools.length === 0) {
+          return null;
+        }
+
+        return (
+          <section style="margin-top: 3rem;">
+            <h2>{categoryNames[lang]}</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+              {categoryTools.map((tool) => (
+                <Card hover={true}>
+                  <h3 style="margin-top: 0; margin-bottom: 0.5rem;">
+                    <a href={`/${lang}/tools/${tool.slug[lang]}`} style="color: var(--color-green); text-decoration: none;">
+                      {tool.name[lang]}
+                    </a>
+                  </h3>
+                  <p style="color: var(--color-text-secondary); margin: 0.5rem 0 1rem 0; line-height: 1.6;">
+                    {tool.description[lang]}
+                  </p>
+                  <a href={`/${lang}/tools/${tool.slug[lang]}`} style="color: var(--color-blue); font-weight: 500; text-decoration: none;">
+                    {lang === 'en'
+                      ? 'Open Tool →'
+                      : lang === 'es'
+                        ? 'Abrir Herramienta →'
+                        : lang === 'pt'
+                          ? 'Abrir Ferramenta →'
+                          : 'ツールを開く →'}
+                  </a>
+                </Card>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </BaseLayout>
+  </body>
+</html>

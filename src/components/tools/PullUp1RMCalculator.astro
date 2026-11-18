@@ -1,0 +1,28 @@
+---
+import type { Language } from '@/lib/i18n';
+import OneRMBodyweightBase from './OneRMBodyweightBase.astro';
+import { pullUp1RMTexts, pullUp1RMFaqs } from '@/i18n/tools/pull-up-1rm-calculator';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const config = {
+  storageKey: 'pullup_1rm_unit',
+  keyword: 'weighted pull-up 1rm calculator',
+  siteName: 'Fit Prime Lab',
+  slugs: { en: 'pull-up-1rm-calculator', es: 'calculadora-1rm-dominadas', pt: 'calculadora-1rm-barra-fixa', ja: 'kenju-1rm-keisanki' },
+  genericRM: { en: 'rm-calculator', es: 'calculadora-rm', pt: 'calculadora-rm', ja: 'rm-calculator' },
+  toolsIndexLabel: { en: 'All tools', es: 'Todas las herramientas', pt: 'Todas as ferramentas', ja: 'ツール一覧' },
+  related: {
+    slug: { en: 'dips-1rm-calculator', es: 'calculadora-1rm-fondos', pt: 'calculadora-1rm-paralelas', ja: 'dips-1rm-keisanki' },
+    label: { en: 'Weighted Dips 1RM Calculator', es: 'Calculadora 1RM Fondos con Lastre', pt: 'Calculadora 1RM Paralelas com Peso', ja: 'ディップス 1RM 計算機' },
+  },
+  faqs: pullUp1RMFaqs,
+  texts: pullUp1RMTexts,
+} as const;
+---
+
+<OneRMBodyweightBase lang={lang} config={config} />

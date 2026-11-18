@@ -1,0 +1,16 @@
+# Assets con hash en nombre → cachear 1 año (immutable)
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML nunca cacheado (cambia con cada deploy)
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*/
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Cabeceras de seguridad globales
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

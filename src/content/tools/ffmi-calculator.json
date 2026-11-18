@@ -1,0 +1,22 @@
+{
+  "slug": {
+    "en": "ffmi-calculator",
+    "es": "calculadora-ffmi",
+    "pt": "calculadora-ffmi",
+    "ja": "ffmi-keisanki"
+  },
+  "name": {
+    "en": "FFMI Calculator — Lean Mass Index & Natural Potential",
+    "es": "Calculadora FFMI — Índice de masa magra y potencial natural",
+    "pt": "Calculadora FFMI — Índice de massa magra e potencial natural",
+    "ja": "FFMI計算機 — 除脂肪量指数とナチュラル上限"
+  },
+  "description": {
+    "en": "Free FFMI calculator with adjusted FFMI, natural muscle potential ceiling and U.S. Navy body-fat estimation. The cleanest way to measure your real lean-mass progress beyond BMI.",
+    "es": "Calculadora FFMI gratuita con FFMI ajustado, techo de potencial muscular natural y estimación de grasa corporal por método U.S. Navy. La forma más clara de medir tu progreso de masa magra real, más allá del IMC.",
+    "pt": "Calculadora FFMI gratuita com FFMI ajustado, teto de potencial muscular natural e estimativa de gordura corporal pelo método U.S. Navy. A forma mais clara de medir seu progresso real de massa magra, além do IMC.",
+    "ja": "補正FFMI、ナチュラル筋量の上限目安、U.S. Navy法による体脂肪率推定に対応した無料のFFMI計算機。BMIを超えて、本当の除脂肪量の進捗を明確に測定できます。"
+  },
+  "category": "strength",
+  "tags": ["strength", "ffmi", "body-composition", "muscle", "powerlifting"]
+}

@@ -1,0 +1,22 @@
+{
+  "slug": {
+    "en": "bench-press-1rm-calculator",
+    "es": "calculadora-1rm-press-banca",
+    "pt": "calculadora-1rm-supino",
+    "ja": "bench-press-1rm-keisanki"
+  },
+  "name": {
+    "en": "Bench Press 1RM Calculator — Estimate Your Max",
+    "es": "Calculadora 1RM Press Banca — Calcula tu máximo",
+    "pt": "Calculadora 1RM Supino — Estime seu máximo",
+    "ja": "ベンチプレス 1RM 計算機 — 最大重量を正確に推定"
+  },
+  "description": {
+    "en": "Free bench press 1RM calculator with Epley, Brzycki, Lombardi and O'Conner formulas, RPE adjustment, training-load percentages and strength standards. Track your bench progress accurately.",
+    "es": "Calculadora 1RM de press banca gratuita con fórmulas Epley, Brzycki, Lombardi y O'Conner, ajuste por RPE, porcentajes de carga y estándares de fuerza. Sigue tu progreso con precisión.",
+    "pt": "Calculadora 1RM de supino gratuita com fórmulas Epley, Brzycki, Lombardi e O'Conner, ajuste por RPE, percentuais de carga e padrões de força. Acompanhe seu supino com precisão.",
+    "ja": "Epley・Brzycki・Lombardi・O'Connerの4公式とRPE補正に対応した無料のベンチプレス1RM計算機。トレーニング%重量と筋力基準表で進捗を正確に管理できます。"
+  },
+  "category": "strength",
+  "tags": ["strength", "1rm", "bench-press", "powerlifting"]
+}

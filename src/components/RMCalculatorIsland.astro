@@ -1,0 +1,654 @@
+---
+import Card from '@/components/Card.astro';
+import type { Language } from '@/lib/i18n';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+// Translations for all languages
+const translations = {
+  en: {
+    title: 'RM Calculator',
+    unit: 'Unit',
+    weight: 'Weight',
+    reps: 'Reps',
+    advancedSettings: 'Advanced Settings',
+    rir: 'RIR',
+    rirHelp: 'Reps In Reserve: how many extra reps you could still do before failure.',
+    formula: 'Formula',
+    calculate: 'Calculate',
+    result: 'Your 1RM',
+    history: 'Show History',
+    clearHistory: 'Clear History',
+    kg: 'kg',
+    lbs: 'lbs',
+    hybrid: 'Hybrid (Recommended)',
+    epley: 'Epley',
+    brzycki: 'Brzycki',
+    lombardi: 'Lombardi',
+    valueSeemHigh: 'This value seems unusually high for the given weight',
+    valueSeemLow: 'This value seems unusually low for the given reps',
+    enterValidValues: 'Please enter valid weight and reps',
+    tableTitle: '1RM Training Percentages',
+    tablePercent: '% 1RM',
+    tableWeight: 'Weight',
+    tableReps: 'Target Reps',
+  },
+  es: {
+    title: 'Calculadora RM',
+    unit: 'Unidad',
+    weight: 'Peso',
+    reps: 'Repeticiones',
+    advancedSettings: 'Más ajustes',
+    rir: 'RIR',
+    rirHelp: 'Repeticiones en Reserva: cuántas repeticiones extras podrías hacer antes del fallo.',
+    formula: 'Fórmula',
+    calculate: 'Calcular',
+    result: 'Tu 1RM',
+    history: 'Ver Historial',
+    clearHistory: 'Limpiar Historial',
+    kg: 'kg',
+    lbs: 'lbs',
+    hybrid: 'Híbrido (Recomendado)',
+    epley: 'Epley',
+    brzycki: 'Brzycki',
+    lombardi: 'Lombardi',
+    valueSeemHigh: 'Este valor parece inusualmente alto para el peso dado',
+    valueSeemLow: 'Este valor parece inusualmente bajo para las reps dadas',
+    enterValidValues: 'Ingresa valores válidos de peso y reps',
+    tableTitle: 'Porcentajes de Entrenamiento 1RM',
+    tablePercent: '% 1RM',
+    tableWeight: 'Peso',
+    tableReps: 'Reps Objetivo',
+  },
+  pt: {
+    title: 'Calculadora RM',
+    unit: 'Unidade',
+    weight: 'Peso',
+    reps: 'Repetições',
+    advancedSettings: 'Mais ajustes',
+    rir: 'RIR',
+    rirHelp: 'Repeticoes em Reserva: quantas repeticoes extras voce ainda faria antes da falha.',
+    formula: 'Fórmula',
+    calculate: 'Calcular',
+    result: 'Seu 1RM',
+    history: 'Ver Histórico',
+    clearHistory: 'Limpar Histórico',
+    kg: 'kg',
+    lbs: 'lbs',
+    hybrid: 'Híbrido (Recomendado)',
+    epley: 'Epley',
+    brzycki: 'Brzycki',
+    lombardi: 'Lombardi',
+    valueSeemHigh: 'Este valor parece muito alto para o peso inserido',
+    valueSeemLow: 'Este valor parece muito baixo para as repetições inseridas',
+    enterValidValues: 'Insira valores válidos de peso e reps',
+    tableTitle: 'Percentuais de Treinamento 1RM',
+    tablePercent: '% 1RM',
+    tableWeight: 'Peso',
+    tableReps: 'Reps Alvo',
+  },
+  ja: {
+    title: '1RM計算機',
+    unit: '単位',
+    weight: 'ウェイト',
+    reps: 'レップス',
+    advancedSettings: '詳細設定',
+    rir: 'RIR',
+    rirHelp: 'RIR（Reps In Reserve）は、限界前にまだできる残り反復回数です。',
+    formula: '公式',
+    calculate: '計算',
+    result: 'あなたの1RM',
+    history: '履歴を表示',
+    clearHistory: '履歴をクリア',
+    kg: 'kg',
+    lbs: 'lbs',
+    hybrid: 'ハイブリッド（推奨）',
+    epley: 'エプレー法',
+    brzycki: 'ブジスキ法',
+    lombardi: 'ロンバルディ',
+    valueSeemHigh: 'このウェイトの値は異常に高いように見えます',
+    valueSeemLow: 'このレップス数には異常に低いように見えます',
+    enterValidValues: '有効なウェイトとレップスを入力してください',    tableTitle: '1RMトレーニングパーセンテージ',
+    tablePercent: '% 1RM',
+    tableWeight: 'ウェイト',
+    tableReps: 'ターゲットレップス',  },
+};
+
+const t = translations[lang];
+
+// Default units by language
+const defaultUnit = lang === 'en' ? 'lbs' : 'kg';
+---
+
+<Card hover gradient>
+  <h3 style="margin-top: 0; margin-bottom: var(--space-lg);">{t.title}</h3>
+  
+  <form id="rm-calculator" style="display: grid; gap: var(--space-lg);">
+    <!-- Unit Selector -->
+    <div style="display: flex; gap: var(--space-md); align-items: center;">
+      <label style="font-size: 0.875rem; color: var(--color-text-secondary);">{t.unit}:</label>
+      <select id="unit-select" style="padding: 0.5rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; font-size: 1rem;">
+        <option value="kg">kg</option>
+        <option value="lbs">lbs</option>
+      </select>
+    </div>
+
+    <!-- Weight Input -->
+    <div style="display: grid; gap: 0.25rem;">
+      <label for="weight" style="font-size: 0.875rem; font-weight: 500;">{t.weight}</label>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <input 
+          id="weight" 
+          type="number" 
+          placeholder="100" 
+          min="0" 
+          step="0.5"
+          style="flex: 1; padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; font-size: 1.125rem;"
+        />
+        <span id="weight-unit" style="font-weight: 500; min-width: 3rem;">{defaultUnit}</span>
+      </div>
+    </div>
+
+    <!-- Reps Input -->
+    <div style="display: grid; gap: 0.25rem;">
+      <label for="reps" style="font-size: 0.875rem; font-weight: 500;">{t.reps}</label>
+      <input 
+        id="reps" 
+        type="number" 
+        placeholder="5" 
+        min="1" 
+        max="100"
+        step="1"
+        style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; font-size: 1.125rem;"
+      />
+    </div>
+
+    <!-- Advanced Settings -->
+    <details style="border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.6);">
+      <summary style="cursor: pointer; font-size: 0.9375rem; font-weight: 600; color: var(--color-text-primary); user-select: none;">
+        {t.advancedSettings}
+      </summary>
+
+      <div style="display: grid; gap: var(--space-md); margin-top: var(--space-md);">
+        <!-- RIR Input -->
+        <div style="display: grid; gap: 0.25rem;">
+          <div style="display: inline-flex; align-items: center; gap: 0.4rem;">
+            <label for="rir" style="font-size: 0.875rem; font-weight: 500;">{t.rir}</label>
+            <div style="position: relative; display: inline-flex; align-items: center;">
+              <button
+                id="rir-help-trigger"
+                type="button"
+                aria-label={t.rirHelp}
+                aria-expanded="false"
+                aria-controls="rir-help-tooltip"
+                style="display: inline-flex; align-items: center; justify-content: center; width: 1rem; height: 1rem; border-radius: 999px; border: 1px solid rgba(0,0,0,0.25); color: var(--color-text-secondary); background: white; font-size: 0.75rem; cursor: help; user-select: none; padding: 0;"
+              >
+                ?
+              </button>
+              <div
+                id="rir-help-tooltip"
+                role="tooltip"
+                style="display: none; position: absolute; top: calc(100% + 0.4rem); left: 0; width: 220px; max-width: min(80vw, 260px); padding: 0.6rem 0.75rem; border-radius: 8px; background: #111827; color: #f9fafb; font-size: 0.75rem; line-height: 1.45; white-space: normal; overflow-wrap: break-word; box-shadow: var(--shadow-md); z-index: 10;"
+              >
+                {t.rirHelp}
+              </div>
+            </div>
+          </div>
+          <input
+            id="rir"
+            type="number"
+            placeholder="0"
+            min="0"
+            max="20"
+            step="1"
+            value="0"
+            style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; font-size: 1.125rem;"
+          />
+        </div>
+
+        <!-- Formula Selector -->
+        <div style="display: grid; gap: 0.25rem;">
+          <label for="formula" style="font-size: 0.875rem; font-weight: 500;">{t.formula}</label>
+          <select id="formula-select" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; font-size: 1rem;">
+            <option value="hybrid">{t.hybrid}</option>
+            <option value="epley">{t.epley}</option>
+            <option value="brzycki">{t.brzycki}</option>
+            <option value="lombardi">{t.lombardi}</option>
+          </select>
+        </div>
+      </div>
+    </details>
+
+    <!-- Calculate Button -->
+    <button 
+      type="button" 
+      id="calc-button"
+      style="padding: 0.875rem 1.5rem; background: linear-gradient(135deg, var(--color-green), var(--color-blue)); color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;"
+    >
+      {t.calculate}
+    </button>
+
+    <!-- Warning Message -->
+    <div id="warning-message" style="display: none; padding: 0.75rem; background-color: #fef3c7; color: #92400e; border-radius: 6px; font-size: 0.875rem; border-left: 4px solid #f59e0b;">
+    </div>
+  </form>
+
+  <!-- Result Section -->
+  <div id="result-container" style="display: none; margin-top: var(--space-lg); padding-top: var(--space-lg); border-top: 1px solid rgba(0,0,0,0.05);">
+    <p style="color: var(--color-text-secondary); margin: 0 0 0.5rem 0; font-size: 0.875rem;">{t.result}</p>
+    <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+      <span id="result-value" data-value="0" style="font-size: 2.5rem; font-weight: 700; color: var(--color-green); opacity: 0; transition: opacity 0.3s ease;">0</span>
+      <span id="result-unit" style="font-size: 1.25rem; color: var(--color-text-secondary); font-weight: 500;">{defaultUnit}</span>
+      <span id="result-formula" style="font-size: 0.875rem; color: var(--color-text-secondary); margin-left: auto;">Epley</span>
+    </div>
+
+    <!-- Training Table -->
+    <div style="margin-top: var(--space-lg); overflow-x: auto;">
+      <p style="color: var(--color-text-secondary); margin: var(--space-md) 0 0.75rem 0; font-size: 0.875rem; font-weight: 500;">{t.tableTitle || 'Training Percentages'}</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9375rem;">
+        <thead style="background-color: rgba(0,0,0,0.02); border-bottom: 2px solid rgba(0,0,0,0.1);">
+          <tr>
+            <th style="padding: 0.75rem; text-align: center; color: var(--color-text-primary); font-weight: 600;">{t.tablePercent || '% 1RM'}</th>
+            <th style="padding: 0.75rem; text-align: center; color: var(--color-text-primary); font-weight: 600;">{t.tableWeight || 'Weight'}</th>
+            <th style="padding: 0.75rem; text-align: center; color: var(--color-text-primary); font-weight: 600;">{t.tableReps || 'Target Reps'}</th>
+          </tr>
+        </thead>
+        <tbody id="training-table-body">
+          <!-- Rows generated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</Card>
+
+<script define:vars={{ lang, translations, defaultUnit }}>
+  // ==================== FORMULAS ====================
+  function calculateEpley(weight, reps) {
+    return Math.round(weight * (1 + reps / 30) * 10) / 10;
+  }
+
+  function calculateBrzycki(weight, reps) {
+    return Math.round((weight / (1.0278 - 0.0278 * reps)) * 10) / 10;
+  }
+
+  function calculateLombardi(weight, reps) {
+    return Math.round(weight * Math.pow(reps, 0.1) * 10) / 10;
+  }
+
+  function calculateHybrid(weight, reps) {
+    // Handle 1RM case
+    if (reps === 1) {
+      return weight;
+    }
+    
+    const epley = calculateEpley(weight, reps);
+    const brzycki = calculateBrzycki(weight, reps);
+    const lombardi = calculateLombardi(weight, reps);
+    
+    // DYNAMIC WEIGHTING based on rep range (PRO version)
+    const r = reps;
+    let wEpley = Math.max(0, 1 - (r - 2) / 10);
+    let wBrzycki = 1 - Math.abs(r - 8) / 8;
+    let wLombardi = (r - 2) / 12;
+    
+    // Normalize weights to sum to 1
+    const sum = wEpley + wBrzycki + wLombardi;
+    wEpley /= sum;
+    wBrzycki /= sum;
+    wLombardi /= sum;
+    
+    // Calculate weighted hybrid
+    const hybrid = brzycki * wBrzycki + epley * wEpley + lombardi * wLombardi;
+    return Math.round(hybrid * 10) / 10;
+  }
+
+  function getFormula(formulaName) {
+    switch(formulaName) {
+      case 'epley': return { fn: calculateEpley, name: 'Epley' };
+      case 'brzycki': return { fn: calculateBrzycki, name: 'Brzycki' };
+      case 'lombardi': return { fn: calculateLombardi, name: 'Lombardi' };
+      case 'hybrid': return { fn: calculateHybrid, name: 'Hybrid' };
+      default: return { fn: calculateHybrid, name: 'Hybrid' };
+    }
+  }
+
+  // ==================== UNIT CONVERSION ====================
+  function kgToLbs(kg) {
+    return Math.round(kg * 2.20462 * 10) / 10;
+  }
+
+  function lbsToKg(lbs) {
+    return Math.round(lbs / 2.20462 * 10) / 10;
+  }
+
+  // ==================== VALIDATION ====================
+  function getValidationWarning(weight, reps, rir, unit) {
+    const t = translations[lang];
+    const effectiveReps = reps + rir;
+    
+    // Convert to kg for consistent validation
+    const weightKg = unit === 'lbs' ? lbsToKg(weight) : weight;
+    
+    if (!weight || !reps || weight <= 0 || reps <= 0 || rir < 0) {
+      return t.enterValidValues;
+    }
+    
+    // Validate reps is integer
+    const repsInput = document.getElementById('reps').value;
+    if (repsInput.includes('.') || !Number.isInteger(reps)) {
+      return 'Reps must be a whole number (1, 2, 3, etc.)';
+    }
+    
+    // Reasonable ranges
+    if (weightKg > 500) {
+      return t.valueSeemHigh;
+    }
+    
+    if (effectiveReps > 100) {
+      return t.valueSeemLow;
+    }
+    
+    return null;
+  }
+
+  // ==================== STORAGE ====================
+  // Removed: localStorage history functionality
+
+  // ==================== ANIMATION ====================
+  function animateNumber(element, end, isSameValue = false, duration = 500) {
+    const startValue = parseFloat(element.textContent) || 0;
+    let startTime = null;
+    
+    // Reset styles
+    element.style.transition = 'none';
+    
+    if (isSameValue) {
+      // DRAMATIC ANIMATION for same value
+      element.style.opacity = '0';
+      element.style.transform = 'scale(0.2) rotate(-90deg)';
+    } else {
+      // SIMPLE ANIMATION for different value
+      element.style.opacity = '0';
+      element.style.transform = 'scale(1) translateY(10px)';
+    }
+    
+    const step = (currentTime) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      
+      // Easing function for smooth animation
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      
+      // Opacity: fade in
+      element.style.opacity = easeOut;
+      
+      if (isSameValue) {
+        // DRAMATIC: Bounce scale + full rotation
+        let scale;
+        if (easeOut < 0.6) {
+          scale = 0.2 + easeOut / 0.6 * 1.0;  // 0.2 → 1.2
+        } else {
+          const bounce = Math.sin((easeOut - 0.6) / 0.4 * Math.PI) * 0.15;
+          scale = 1.2 - 0.2 * ((easeOut - 0.6) / 0.4) + bounce;  // 1.2 → 1 con bounce
+        }
+        
+        // Rotation: completa 360 grados
+        const rotation = easeOut * 360;
+        
+        element.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+      } else {
+        // SIMPLE: Just fade in and slide up
+        const translateY = 10 * (1 - easeOut);
+        element.style.transform = `scale(1) translateY(${translateY}px)`;
+      }
+      
+      if (progress < 1) {
+        const current = Math.round(startValue + (end - startValue) * progress);
+        element.textContent = current;
+        requestAnimationFrame(step);
+      } else {
+        element.textContent = Math.round(end);
+        element.style.opacity = '1';
+        if (isSameValue) {
+          element.style.transform = 'scale(1) rotate(360deg)';
+        } else {
+          element.style.transform = 'scale(1) translateY(0px)';
+        }
+      }
+    };
+    
+    requestAnimationFrame(step);
+  }
+
+  // ==================== UI UPDATES ====================
+  function updateResultDisplay(value, unit, formulaName) {
+    const resultContainer = document.getElementById('result-container');
+    const resultValue = document.getElementById('result-value');
+    const resultUnit = document.getElementById('result-unit');
+    const resultFormula = document.getElementById('result-formula');
+    
+    // Get reliably stored previous value (not the animated text)
+    const previousValue = parseFloat(resultValue.getAttribute('data-value') || '0');
+    const currentValue = Math.round(value * 10) / 10;
+    const isSameValue = previousValue === currentValue && previousValue !== 0;
+    
+    // Store new value for next comparison
+    resultValue.setAttribute('data-value', currentValue.toString());
+    
+    resultUnit.textContent = unit;
+    resultFormula.textContent = formulaName;
+    resultContainer.style.display = 'block';
+    
+    // Animate number (different animation if same value)
+    animateNumber(resultValue, value, isSameValue, 500);
+    
+    // Update training table
+    updateTrainingTable(currentValue, unit);
+  }
+
+  function updateTrainingTable(oneRM, unit) {
+    const percentages = [100, 95, 93, 90, 87, 85, 83, 80, 77, 75, 70, 67, 65];
+    const reps = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15];
+    
+    const tbody = document.getElementById('training-table-body');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    for (let i = 0; i < percentages.length; i++) {
+      const weight = Math.round((oneRM * percentages[i] / 100) * 10) / 10;
+      const row = document.createElement('tr');
+      row.style.borderBottom = '1px solid rgba(0,0,0,0.05)';
+      
+      const pCell = document.createElement('td');
+      pCell.textContent = percentages[i] + '%';
+      pCell.style.padding = '0.5rem';
+      pCell.style.textAlign = 'center';
+      pCell.style.fontWeight = '500';
+      pCell.style.color = 'var(--color-text-primary)';
+      
+      const wCell = document.createElement('td');
+      wCell.textContent = weight + ' ' + unit;
+      wCell.style.padding = '0.5rem';
+      wCell.style.textAlign = 'center';
+      wCell.style.color = 'var(--color-green)';
+      wCell.style.fontWeight = '600';
+      
+      const rCell = document.createElement('td');
+      rCell.textContent = reps[i];
+      rCell.style.padding = '0.5rem';
+      rCell.style.textAlign = 'center';
+      rCell.style.color = 'var(--color-text-secondary)';
+      
+      row.appendChild(pCell);
+      row.appendChild(wCell);
+      row.appendChild(rCell);
+      tbody.appendChild(row);
+    }
+  }
+
+  function showWarning(message) {
+    const warningEl = document.getElementById('warning-message');
+    if (message) {
+      warningEl.textContent = message;
+      warningEl.style.display = 'block';
+    } else {
+      warningEl.style.display = 'none';
+    }
+  }
+
+  // ==================== MAIN CALCULATION ====================
+  function calculate() {
+    const weight = parseFloat(document.getElementById('weight').value);
+    const reps = parseInt(document.getElementById('reps').value);
+    const rirInput = document.getElementById('rir').value;
+    const rir = rirInput === '' ? 0 : parseInt(rirInput);
+    const unit = document.getElementById('unit-select').value;
+    const formulaName = document.getElementById('formula-select').value;
+    const effectiveReps = reps + rir;
+    
+    // Validation
+    const warning = getValidationWarning(weight, reps, rir, unit);
+    if (warning) {
+      showWarning(warning);
+      return;
+    }
+    
+    showWarning(null);
+    
+    // Convert to kg if needed for calculation
+    const weightForCalc = unit === 'lbs' ? lbsToKg(weight) : weight;
+    
+    // Calculate
+    const formulaObj = getFormula(formulaName);
+    const resultKg = formulaObj.fn(weightForCalc, effectiveReps);
+    const resultValue = unit === 'lbs' ? kgToLbs(resultKg) : resultKg;
+    
+    // Display
+    updateResultDisplay(resultValue, unit, formulaObj.name);
+    
+    // Analytics
+    if (typeof window !== 'undefined' && window.gtag) {
+      gtag('event', 'calculate_rm', {
+        formula: formulaName,
+        unit: unit,
+        reps: reps,
+        rir: rir,
+        effective_reps: effectiveReps,
+        language: lang
+      });
+    }
+  }
+
+  // ==================== EVENT LISTENERS ====================
+  document.getElementById('unit-select').addEventListener('change', (e) => {
+    const unit = e.target.value;
+    document.getElementById('weight-unit').textContent = unit;
+    document.getElementById('result-unit').textContent = unit;
+    
+    // Auto-convert weight if result exists
+    const weight = parseFloat(document.getElementById('weight').value);
+    if (weight && document.getElementById('result-container').style.display !== 'none') {
+      calculate();
+    }
+  });
+
+  document.getElementById('calc-button').addEventListener('click', calculate);
+
+  // RIR tooltip: works on tap/click (mobile) and hover/focus (desktop)
+  const rirHelpTrigger = document.getElementById('rir-help-trigger');
+  const rirHelpTooltip = document.getElementById('rir-help-tooltip');
+
+  const openRirTooltip = () => {
+    rirHelpTooltip.style.display = 'block';
+    rirHelpTrigger.setAttribute('aria-expanded', 'true');
+  };
+
+  const closeRirTooltip = () => {
+    rirHelpTooltip.style.display = 'none';
+    rirHelpTrigger.setAttribute('aria-expanded', 'false');
+  };
+
+  const toggleRirTooltip = () => {
+    const isOpen = rirHelpTooltip.style.display === 'block';
+    if (isOpen) {
+      closeRirTooltip();
+    } else {
+      openRirTooltip();
+    }
+  };
+
+  rirHelpTrigger.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleRirTooltip();
+  });
+
+  rirHelpTrigger.addEventListener('mouseenter', openRirTooltip);
+  rirHelpTrigger.addEventListener('mouseleave', closeRirTooltip);
+  rirHelpTrigger.addEventListener('focus', openRirTooltip);
+  rirHelpTrigger.addEventListener('blur', closeRirTooltip);
+
+  document.addEventListener('click', (e) => {
+    if (!rirHelpTrigger.contains(e.target) && !rirHelpTooltip.contains(e.target)) {
+      closeRirTooltip();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeRirTooltip();
+    }
+  });
+
+  // Enter key to calculate
+  document.getElementById('weight').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') calculate();
+  });
+
+  document.getElementById('reps').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') calculate();
+  });
+
+  document.getElementById('rir').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') calculate();
+  });
+
+  // Force reps to be integer - prevent decimal input
+  document.getElementById('reps').addEventListener('input', (e) => {
+    let value = e.target.value;
+    // Remove any decimal point
+    if (value.includes('.')) {
+      e.target.value = Math.round(parseFloat(value));
+    }
+  });
+
+  // Force RIR to be integer and not negative
+  document.getElementById('rir').addEventListener('input', (e) => {
+    let value = e.target.value;
+    if (value === '') {
+      return;
+    }
+
+    if (value.includes('.')) {
+      value = Math.round(parseFloat(value)).toString();
+    }
+
+    const parsed = parseInt(value, 10);
+    if (Number.isNaN(parsed) || parsed < 0) {
+      e.target.value = '0';
+      return;
+    }
+
+    e.target.value = parsed.toString();
+  });
+
+  // ==================== INITIALIZATION ====================
+  // Initialize unit selector with default
+  document.getElementById('unit-select').value = defaultUnit;
+  document.getElementById('weight-unit').textContent = defaultUnit;
+</script>

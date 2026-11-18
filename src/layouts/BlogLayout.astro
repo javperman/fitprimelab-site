@@ -1,0 +1,227 @@
+---
+// Blog Layout Component
+import BaseLayout from './BaseLayout.astro';
+import SEOHead from '@/components/SEOHead.astro';
+import Container from '@/components/Container.astro';
+import Section from '@/components/Section.astro';
+import Card from '@/components/Card.astro';
+import { formatDate } from '@/lib/blog';
+import type { Language } from '@/lib/i18n';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: Language;
+  author?: string;
+  datePublished: string;
+  dateModified?: string;
+  image?: string;
+  slug?: string;
+  translationSlugs?: Partial<Record<Language, string>>;
+  tldr?: string;
+  relatedTools?: string[];
+}
+
+const { title, description, lang, author, datePublished, dateModified, image, slug, translationSlugs, tldr, relatedTools } =
+  Astro.props;
+
+const formattedDate = formatDate(datePublished, lang);
+const formattedModified = dateModified ? formatDate(dateModified, lang) : null;
+
+// Build partial slugs map: current language + available translations
+const allSlugs: Partial<Record<Language, string>> = slug
+  ? { [lang]: slug, ...(translationSlugs || {}) }
+  : {};
+
+// JSON-LD: BlogPosting
+const baseUrl = 'https://fitprimelab.com';
+const canonicalUrl = slug ? `${baseUrl}/${lang}/blog/${slug}` : undefined;
+
+const articleSchema = canonicalUrl
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: title,
+      description,
+      url: canonicalUrl,
+      datePublished,
+      dateModified: dateModified || datePublished,
+      author: {
+        '@type': 'Organization',
+        name: author || 'Fit Prime Lab',
+        url: baseUrl,
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Fit Prime Lab',
+        url: baseUrl,
+      },
+      ...(image ? { image: image.startsWith('http') ? image : `${baseUrl}${image}` } : {}),
+    }
+  : null;
+
+// Labels
+const homeLabels: Record<Language, string> = {
+  en: 'Home',
+  es: 'Inicio',
+  pt: 'Início',
+  ja: 'ホーム',
+};
+
+const tldrLabels: Record<Language, string> = {
+  en: 'TL;DR',
+  es: 'En resumen',
+  pt: 'Em resumo',
+  ja: 'まとめ',
+};
+
+const relatedToolsLabels: Record<Language, string> = {
+  en: 'Related tools',
+  es: 'Herramientas relacionadas',
+  pt: 'Ferramentas relacionadas',
+  ja: '関連ツール',
+};
+
+function formatSlugLabel(s: string): string {
+  return s.split('-').map(w => {
+    if (w === '1rm') return '1RM';
+    if (w === 'rm') return 'RM';
+    return w.charAt(0).toUpperCase() + w.slice(1);
+  }).join(' ');
+}
+
+// JSON-LD: BreadcrumbList
+
+const breadcrumbSchema = canonicalUrl
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: homeLabels[lang], item: `${baseUrl}/${lang}` },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: `${baseUrl}/${lang}/blog` },
+        { '@type': 'ListItem', position: 3, name: title, item: canonicalUrl },
+      ],
+    }
+  : null;
+---
+
+<html lang={lang}>
+  <SEOHead
+    title={title}
+    description={description}
+    lang={lang}
+    slugs={Object.keys(allSlugs).length > 0 ? allSlugs : undefined}
+    route="/blog/[slug]"
+    image={image}
+    type="article"
+    article={{
+      datePublished,
+      dateModified,
+      author: author || 'Fit Prime Lab',
+    }}
+  />
+  <body>
+    <BaseLayout title={title} description={description} lang={lang} slugs={allSlugs} routeType="blog">
+      {articleSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} />}
+      {breadcrumbSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />}
+
+      <Container maxWidth="800px">
+        <!-- Blog Header -->
+        <Section background="default">
+          <article>
+            {/* Breadcrumbs */}
+            <nav aria-label="breadcrumb" style="margin-bottom: var(--space-lg); font-size: 0.8125rem;">
+              <ol style="display: flex; flex-wrap: wrap; gap: 0.375rem; align-items: center; list-style: none; padding: 0; margin: 0;">
+                <li><a href={`/${lang}/`} style="color: var(--color-text-secondary); text-decoration: none;">{homeLabels[lang]}</a></li>
+                <li style="color: var(--color-text-light);" aria-hidden="true">›</li>
+                <li><a href={`/${lang}/blog`} style="color: var(--color-text-secondary); text-decoration: none;">Blog</a></li>
+                <li style="color: var(--color-text-light);" aria-hidden="true">›</li>
+                <li style="color: var(--color-text-primary); font-weight: 500;" aria-current="page">{title}</li>
+              </ol>
+            </nav>
+
+            {image && (
+              <img
+                src={image}
+                alt={title}
+                style="margin-bottom: var(--space-2xl); border-radius: var(--radius-lg);"
+              />
+            )}
+
+            <h1 style="margin-bottom: var(--space-md);">{title}</h1>
+
+            <div style="
+              display: flex;
+              flex-wrap: wrap;
+              gap: var(--space-md);
+              color: var(--color-text-secondary);
+              font-size: 0.95rem;
+              margin-bottom: var(--space-xl);
+              padding-bottom: var(--space-lg);
+              border-bottom: 1px solid var(--color-border);
+            ">
+              {author && <span>By <strong>{author}</strong></span>}
+              <span>{formattedDate}</span>
+              {formattedModified && <span>Updated: {formattedModified}</span>}
+            </div>
+
+            <p style="
+              font-size: 1.125rem;
+              color: var(--color-text-secondary);
+              line-height: 1.8;
+              margin: 0 0 var(--space-xl) 0;
+            ">
+              {description}
+            </p>
+
+            {/* TL;DR callout */}
+            {tldr && (
+              <div style="margin-bottom: var(--space-xl); padding: var(--space-lg); background: rgba(16, 185, 129, 0.05); border-left: 4px solid var(--color-green); border-radius: 0 var(--radius-md) var(--radius-md) 0;">
+                <strong style="display: block; margin-bottom: 0.375rem; color: var(--color-green); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.07em;">{tldrLabels[lang]}</strong>
+                <p style="margin: 0; color: var(--color-text-primary); line-height: 1.75; font-size: 0.9375rem;">{tldr}</p>
+              </div>
+            )}
+          </article>
+        </Section>
+
+        <!-- Blog Content -->
+        <article style="
+          display: grid;
+          gap: var(--space-xl);
+          padding: var(--space-2xl) 0;
+        ">
+          <slot />
+        </article>
+
+        <!-- Related Tools -->
+        {relatedTools && relatedTools.length > 0 && (
+          <div style="margin-top: var(--space-xl); margin-bottom: var(--space-xl); padding: var(--space-xl); background: var(--color-bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--color-border);">
+            <p style="margin: 0 0 var(--space-md) 0; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--color-text-secondary);">{relatedToolsLabels[lang]}</p>
+            <div style="display: flex; flex-wrap: wrap; gap: var(--space-sm);">
+              {relatedTools.map((toolSlug) => (
+                <a href={`/${lang}/tools/${toolSlug}`} style="display: inline-flex; align-items: center; padding: 0.4rem 0.875rem; background: white; border: 1px solid var(--color-border); border-radius: 999px; font-size: 0.875rem; font-weight: 500; color: var(--color-text-primary); text-decoration: none; transition: border-color 0.2s ease, color 0.2s ease;">
+                  {formatSlugLabel(toolSlug)}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Engagement Section -->
+        <Section background="light" style="margin-top: var(--space-xl);">
+          <Card>
+            <p style="color: var(--color-text-secondary); text-align: center; margin: 0;">
+              {lang === 'en'
+                ? 'Found this helpful? Share with your training partners!'
+                : lang === 'es'
+                  ? '¿Te fue útil? ¡Comparte con tus compañeros de entrenamiento!'
+                  : lang === 'pt'
+                    ? 'Achou útil? Compartilhe com seus parceiros de treinamento!'
+                    : '役に立ちましたか？トレーニング仲間とシェアしてください！'}
+            </p>
+          </Card>
+        </Section>
+      </Container>
+    </BaseLayout>
+  </body>
+</html>

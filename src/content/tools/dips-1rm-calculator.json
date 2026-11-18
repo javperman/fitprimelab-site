@@ -1,0 +1,22 @@
+{
+  "slug": {
+    "en": "dips-1rm-calculator",
+    "es": "calculadora-1rm-fondos",
+    "pt": "calculadora-1rm-paralelas",
+    "ja": "dips-1rm-keisanki"
+  },
+  "name": {
+    "en": "Weighted Dips 1RM Calculator — Estimate Your Max",
+    "es": "Calculadora 1RM Fondos con Lastre — Tu máximo",
+    "pt": "Calculadora 1RM Paralelas com Peso — Seu máximo",
+    "ja": "加重ディップス 1RM 計算機 — 最大重量を推定"
+  },
+  "description": {
+    "en": "Free weighted dips 1RM calculator with multi-formula averaging. Get total-load and added-weight maxes plus bodyweight-relative strength standards to compare progress fairly.",
+    "es": "Calculadora 1RM gratuita de fondos con lastre con promedio multifórmula. Obtén tu máximo de carga total y de lastre, más estándares relativos al peso corporal para comparar progreso.",
+    "pt": "Calculadora 1RM gratuita de paralelas com peso e média multifórmula. Veja seu máximo de carga total e de carga adicional, com padrões relativos ao peso corporal para comparar evolução.",
+    "ja": "複数公式の平均で加重ディップスの1RMを推定する無料計算機。総負荷と追加重量の最大値、体重比による筋力基準を一度に確認でき、進捗を公平に比較できます。"
+  },
+  "category": "strength",
+  "tags": ["strength", "1rm", "dips", "calisthenics", "weighted"]
+}

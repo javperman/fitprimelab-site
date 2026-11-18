@@ -1,0 +1,62 @@
+---
+// Logo component with WebP + PNG fallback
+interface Props {
+  width?: number;
+  height?: number;
+  alt?: string;
+  variant?: 'full' | 'icon';
+  responsive?: boolean;
+}
+
+const { 
+  width = 200, 
+  height = 150, 
+  alt = 'Fit Prime Lab',
+  variant = 'full',
+  responsive = true
+} = Astro.props;
+
+const getFileName = () => {
+  if (variant === 'icon') return 'logo-icon';
+  return 'logo_sin_fondo';
+};
+
+const fileName = getFileName();
+---
+
+<picture class={`logo logo--${variant} ${responsive ? 'logo--responsive' : ''}`}>
+  <source srcset={`/${fileName}.webp`} type="image/webp" />
+  <source srcset={`/${fileName}.png`} type="image/png" />
+  <img 
+    src={`/${fileName}.png`}
+    alt={alt}
+    width={width}
+    height={height}
+    loading="lazy"
+    decoding="async"
+  />
+</picture>
+
+<style scoped>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .logo--responsive img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .logo--icon {
+    width: auto;
+    height: auto;
+  }
+</style>

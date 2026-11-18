@@ -1,0 +1,22 @@
+{
+  "slug": {
+    "en": "wilks-calculator",
+    "es": "calculadora-wilks",
+    "pt": "calculadora-wilks",
+    "ja": "wilks-keisanki"
+  },
+  "name": {
+    "en": "Wilks Calculator — Compare Powerlifting Strength Fairly",
+    "es": "Calculadora Wilks — Compara fuerza en powerlifting con justicia",
+    "pt": "Calculadora Wilks — Compare força no powerlifting com justiça",
+    "ja": "Wilks計算機 — 体重差を補正して筋力を公平に比較"
+  },
+  "description": {
+    "en": "Free Wilks calculator with the 2017 coefficients and IPF GL points. Normalize your squat, bench and deadlift total against bodyweight to compare powerlifting performance fairly across weight classes.",
+    "es": "Calculadora Wilks gratuita con los coeficientes 2017 y puntos IPF GL. Normaliza tu total de sentadilla, banca y peso muerto según tu peso corporal y compara rendimiento de powerlifting entre categorías con justicia.",
+    "pt": "Calculadora Wilks gratuita com os coeficientes 2017 e pontos IPF GL. Normalize seu total de agachamento, supino e terra pelo peso corporal e compare o desempenho no powerlifting entre categorias com justiça.",
+    "ja": "2017年係数のWilksとIPF GLポイントを計算する無料ツール。スクワット・ベンチ・デッドリフトのトータルを体重で正規化し、階級を超えてパワーリフティング成績を公平に比較できます。"
+  },
+  "category": "strength",
+  "tags": ["strength", "wilks", "powerlifting", "ipf", "score"]
+}

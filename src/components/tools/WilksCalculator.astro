@@ -1,0 +1,364 @@
+---
+import Card from '@/components/Card.astro';
+import type { Language } from '@/lib/i18n';
+import type { Tool } from '@/lib/tools';
+import { wilksCalculatorI18n } from '@/i18n/tools/wilks-calculator';
+
+interface Props {
+  lang: Language;
+  tool: Tool;
+}
+
+const { lang, tool } = Astro.props;
+const t = wilksCalculatorI18n[lang];
+
+const ffmiSlugs = {
+  en: 'ffmi-calculator',
+  es: 'calculadora-ffmi',
+  pt: 'calculadora-ffmi',
+  ja: 'ffmi-keisanki'
+};
+
+const appSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: tool.name[lang],
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  inLanguage: lang,
+  description: tool.description[lang],
+  url: `https://fitprimelab.com/${lang}/tools/${tool.slug[lang]}`
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: t.faq1q,
+      acceptedAnswer: { '@type': 'Answer', text: t.faq1a }
+    },
+    {
+      '@type': 'Question',
+      name: t.faq2q,
+      acceptedAnswer: { '@type': 'Answer', text: t.faq2a }
+    },
+    {
+      '@type': 'Question',
+      name: t.faq3q,
+      acceptedAnswer: { '@type': 'Answer', text: t.faq3a }
+    }
+  ]
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(appSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+<section style="margin-bottom: var(--space-xl);">
+  <h1 style="margin-top: 0; margin-bottom: var(--space-md);">{t.h1}</h1>
+  <p style="color: var(--color-text-secondary); margin-top: 0;">{t.subtitle}</p>
+</section>
+
+<Card hover gradient>
+  <form id="wilks-form" style="display: grid; gap: var(--space-md);">
+    <div style="display: grid; gap: 0.25rem;">
+      <label for="wilks-unit" style="font-size: 0.875rem; font-weight: 500;">{t.unit}</label>
+      <select id="wilks-unit" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;">
+        <option value="kg">kg</option>
+        <option value="lb">lb</option>
+      </select>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm);">
+      <div style="display: grid; gap: 0.25rem;">
+        <label for="wilks-sex" style="font-size: 0.875rem; font-weight: 500;">{t.sex}</label>
+        <select id="wilks-sex" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;">
+          <option value="male">{t.male}</option>
+          <option value="female">{t.female}</option>
+        </select>
+      </div>
+      <div style="display: grid; gap: 0.25rem;">
+        <label for="wilks-bw" style="font-size: 0.875rem; font-weight: 500;">{t.bodyweight}</label>
+        <input id="wilks-bw" type="number" min="0" step="0.1" placeholder="83" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;" />
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 0.5rem; margin-bottom: var(--space-sm);">
+      <button type="button" id="wilks-mode-sep" style="flex: 1; padding: 0.65rem; border: 2px solid var(--color-green); background: var(--color-green); color: white; border-radius: 6px; font-weight: 600; cursor: pointer;">{t.modeByLift}</button>
+      <button type="button" id="wilks-mode-total" style="flex: 1; padding: 0.65rem; border: 2px solid rgba(0,0,0,0.15); background: white; color: var(--color-text-primary); border-radius: 6px; font-weight: 600; cursor: pointer;">{t.modeTotal}</button>
+    </div>
+
+    <div id="wilks-lifts-section">
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-sm);">
+        <div style="display: grid; gap: 0.25rem;">
+          <label for="wilks-squat" style="font-size: 0.875rem; font-weight: 500;">{t.squat}</label>
+          <input id="wilks-squat" type="number" min="0" step="0.1" placeholder="240" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;" />
+        </div>
+        <div style="display: grid; gap: 0.25rem;">
+          <label for="wilks-bench" style="font-size: 0.875rem; font-weight: 500;">{t.bench}</label>
+          <input id="wilks-bench" type="number" min="0" step="0.1" placeholder="160" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;" />
+        </div>
+        <div style="display: grid; gap: 0.25rem;">
+          <label for="wilks-deadlift" style="font-size: 0.875rem; font-weight: 500;">{t.deadlift}</label>
+          <input id="wilks-deadlift" type="number" min="0" step="0.1" placeholder="282.5" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;" />
+        </div>
+      </div>
+    </div>
+
+    <div id="wilks-total-section" style="display: none;">
+      <div style="display: grid; gap: 0.25rem;">
+        <label for="wilks-total" style="font-size: 0.875rem; font-weight: 500;">{t.total}</label>
+        <input id="wilks-total" type="number" min="0" step="0.1" placeholder="682.5" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;" />
+        <small style="color: var(--color-text-secondary);">{t.autoTotal}</small>
+      </div>
+    </div>
+
+    <p id="wilks-error" style="display: none; margin: 0; color: #b91c1c; background: #fee2e2; padding: 0.75rem; border-radius: 6px;"></p>
+
+    <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+      <button type="button" id="wilks-calc" style="padding: 0.875rem 1.25rem; background: linear-gradient(135deg, var(--color-green), var(--color-blue)); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">{t.calculate}</button>
+      <button type="button" id="wilks-clear" style="padding: 0.875rem 1.25rem; background: #fff; color: var(--color-text-primary); border: 1px solid rgba(0,0,0,0.16); border-radius: 6px; font-weight: 600; cursor: pointer;">{t.clear}</button>
+    </div>
+  </form>
+
+  <div id="wilks-result" style="display: none; margin-top: var(--space-lg); padding-top: var(--space-lg); border-top: 1px solid rgba(0,0,0,0.08);">
+    <h3 style="margin-top: 0;">{t.resultTitle}</h3>
+    <div style="display: grid; gap: 0.5rem;">
+      <p style="margin: 0;"><strong>{t.wilksScore}:</strong> <span id="wilks-score-value">0</span></p>
+      <p style="margin: 0;"><strong>{t.ipfGl}:</strong> <span id="wilks-ipf-value">0</span></p>
+      <p style="margin: 0;"><strong>{t.classification}:</strong> <span id="wilks-class-value">-</span></p>
+    </div>
+    <button type="button" id="wilks-copy" style="margin-top: var(--space-md); padding: 0.625rem 1rem; border: 1px solid rgba(0,0,0,0.18); background: white; border-radius: 6px; cursor: pointer;">{t.copyResult}</button>
+    <span id="wilks-copy-msg" style="margin-left: 0.5rem; color: var(--color-green); font-size: 0.875rem; display: none;">{t.copied}</span>
+  </div>
+</Card>
+
+<section style="margin-top: var(--space-lg);">
+  <details open>
+    <summary style="font-weight: 700; cursor: pointer;">{t.tableTitle}</summary>
+    <table style="width: 100%; border-collapse: collapse; margin-top: var(--space-sm);">
+      <tbody>
+        <tr><td style="padding: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.08);">&lt; 250</td><td style="padding: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.08);">{t.classUntrained}</td></tr>
+        <tr><td style="padding: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.08);">250 - 299</td><td style="padding: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.08);">{t.classBeginner}</td></tr>
+        <tr><td style="padding: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.08);">300 - 349</td><td style="padding: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.08);">{t.classIntermediate}</td></tr>
+        <tr><td style="padding: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.08);">350 - 399</td><td style="padding: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.08);">{t.classAdvanced}</td></tr>
+        <tr><td style="padding: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.08);">400 - 449</td><td style="padding: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.08);">{t.classElite}</td></tr>
+        <tr><td style="padding: 0.5rem;">&ge; 450</td><td style="padding: 0.5rem;">{t.classWorldClass}</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<section style="margin-top: var(--space-lg);">
+  <h2 style="margin-top: 0;">{t.faqTitle}</h2>
+  <div style="display: grid; gap: var(--space-md);">
+    <details><summary style="font-weight: 600;">{t.faq1q}</summary><p>{t.faq1a}</p></details>
+    <details><summary style="font-weight: 600;">{t.faq2q}</summary><p>{t.faq2a}</p></details>
+    <details><summary style="font-weight: 600;">{t.faq3q}</summary><p>{t.faq3a}</p></details>
+    <details><summary style="font-weight: 600;">{t.faq4q}</summary><p>{t.faq4a}</p></details>
+    <details><summary style="font-weight: 600;">{t.faq5q}</summary><p>{t.faq5a}</p></details>
+  </div>
+</section>
+
+<section style="margin-top: var(--space-lg);">
+  <h3 style="margin-top: 0;">{t.linksTitle}</h3>
+  <ul style="padding-left: 1rem; margin: 0; display: grid; gap: 0.4rem;">
+    <li><a href={`/${lang}/tools/${ffmiSlugs[lang]}`}>{t.toFfmi}</a></li>
+    <li><a href={`/${lang}/tools`}>{t.toTools}</a></li>
+  </ul>
+</section>
+
+<script define:vars={{ t }}>
+  const unitSelect = document.getElementById('wilks-unit');
+  const sexSelect = document.getElementById('wilks-sex');
+  const bwInput = document.getElementById('wilks-bw');
+  const squatInput = document.getElementById('wilks-squat');
+  const benchInput = document.getElementById('wilks-bench');
+  const deadliftInput = document.getElementById('wilks-deadlift');
+  const totalInput = document.getElementById('wilks-total');
+  const calcBtn = document.getElementById('wilks-calc');
+  const clearBtn = document.getElementById('wilks-clear');
+  const errorBox = document.getElementById('wilks-error');
+  const resultBox = document.getElementById('wilks-result');
+  const scoreValue = document.getElementById('wilks-score-value');
+  const ipfValue = document.getElementById('wilks-ipf-value');
+  const classValue = document.getElementById('wilks-class-value');
+  const copyBtn = document.getElementById('wilks-copy');
+  const copyMsg = document.getElementById('wilks-copy-msg');
+  const modeSepBtn = document.getElementById('wilks-mode-sep');
+  const modeTotalBtn = document.getElementById('wilks-mode-total');
+  const liftsSection = document.getElementById('wilks-lifts-section');
+  const totalSection = document.getElementById('wilks-total-section');
+
+  const UNIT_KEY = 'wilks_unit';
+
+  const toKg = (v, unit) => unit === 'lb' ? v * 0.45359237 : v;
+
+  const coeffs = {
+    male: {
+      a: -216.0475144,
+      b: 16.2606339,
+      c: -0.002388645,
+      d: -0.00113732,
+      e: 7.01863e-6,
+      f: -1.291e-8
+    },
+    female: {
+      a: 594.31747775582,
+      b: -27.23842536447,
+      c: 0.82112226871,
+      d: -0.00930733913,
+      e: 4.731582e-5,
+      f: -9.054e-8
+    }
+  };
+
+  function showError(message) {
+    errorBox.textContent = message;
+    errorBox.style.display = 'block';
+  }
+
+  function clearError() {
+    errorBox.textContent = '';
+    errorBox.style.display = 'none';
+  }
+
+  function getTotalKg(unit) {
+    const s = Number(squatInput.value || 0);
+    const b = Number(benchInput.value || 0);
+    const d = Number(deadliftInput.value || 0);
+    if (s > 0 && b > 0 && d > 0) {
+      const total = s + b + d;
+      totalInput.value = total.toFixed(1).replace(/\.0$/, '');
+      return toKg(total, unit);
+    }
+    const totalManual = Number(totalInput.value || 0);
+    if (totalManual > 0) return toKg(totalManual, unit);
+    return 0;
+  }
+
+  function getWilksClassification(score) {
+    if (score < 250) return t.classUntrained;
+    if (score < 300) return t.classBeginner;
+    if (score < 350) return t.classIntermediate;
+    if (score < 400) return t.classAdvanced;
+    if (score < 450) return t.classElite;
+    return t.classWorldClass;
+  }
+
+  function calcWilks(totalKg, bwKg, sex) {
+    const c = coeffs[sex];
+    const denominator = c.a + c.b * bwKg + c.c * bwKg ** 2 + c.d * bwKg ** 3 + c.e * bwKg ** 4 + c.f * bwKg ** 5;
+    const coefficient = 500 / denominator;
+    return totalKg * coefficient;
+  }
+
+  function calcIPFGL(totalKg, bwKg, sex) {
+    // Approximation used for practical comparison display.
+    const denom = sex === 'male'
+      ? (1236.25115 - 15.29 * bwKg + 0.0489 * bwKg ** 2)
+      : (758.63878 - 13.867 * bwKg + 0.0857 * bwKg ** 2);
+    return 100 * (totalKg / denom) * 100;
+  }
+
+  function calculate() {
+    clearError();
+    const unit = unitSelect.value;
+    const sex = sexSelect.value;
+    const bwRaw = Number(bwInput.value || 0);
+
+    if (bwRaw <= 0) {
+      showError(t.errorRequired);
+      return;
+    }
+
+    const bwKg = toKg(bwRaw, unit);
+    const totalKg = getTotalKg(unit);
+
+    if (totalKg <= 0) {
+      showError(t.errorRequired);
+      return;
+    }
+
+    const wilks = calcWilks(totalKg, bwKg, sex);
+    const ipf = calcIPFGL(totalKg, bwKg, sex);
+
+    scoreValue.textContent = wilks.toFixed(2);
+    ipfValue.textContent = ipf.toFixed(2);
+    classValue.textContent = getWilksClassification(wilks);
+    resultBox.style.display = 'block';
+  }
+
+  function clearAll() {
+    bwInput.value = '';
+    squatInput.value = '';
+    benchInput.value = '';
+    deadliftInput.value = '';
+    totalInput.value = '';
+    clearError();
+    resultBox.style.display = 'none';
+  }
+
+  function copyResult() {
+    const text = `${t.wilksScore}: ${scoreValue.textContent} | ${t.ipfGl}: ${ipfValue.textContent} | ${t.classification}: ${classValue.textContent}`;
+    navigator.clipboard.writeText(text).then(() => {
+      copyMsg.style.display = 'inline';
+      setTimeout(() => { copyMsg.style.display = 'none'; }, 1600);
+    });
+  }
+
+  [bwInput, squatInput, benchInput, deadliftInput, totalInput].forEach((input) => {
+    input.addEventListener('blur', () => {
+      if (input.value && Number(input.value) <= 0) {
+        showError(t.errorPositive);
+      } else if (errorBox.textContent === t.errorPositive) {
+        clearError();
+      }
+    });
+  });
+
+  function showSepMode() {
+    liftsSection.style.display = 'block';
+    totalSection.style.display = 'none';
+    modeSepBtn.style.background = 'var(--color-green)';
+    modeSepBtn.style.borderColor = 'var(--color-green)';
+    modeSepBtn.style.color = 'white';
+    modeTotalBtn.style.background = 'white';
+    modeTotalBtn.style.borderColor = 'rgba(0,0,0,0.15)';
+    modeTotalBtn.style.color = 'var(--color-text-primary)';
+    squatInput.value = '';
+    benchInput.value = '';
+    deadliftInput.value = '';
+    clearError();
+    resultBox.style.display = 'none';
+  }
+
+  function showTotalMode() {
+    liftsSection.style.display = 'none';
+    totalSection.style.display = 'block';
+    modeSepBtn.style.background = 'white';
+    modeSepBtn.style.borderColor = 'rgba(0,0,0,0.15)';
+    modeSepBtn.style.color = 'var(--color-text-primary)';
+    modeTotalBtn.style.background = 'var(--color-green)';
+    modeTotalBtn.style.borderColor = 'var(--color-green)';
+    modeTotalBtn.style.color = 'white';
+    totalInput.value = '';
+    clearError();
+    resultBox.style.display = 'none';
+  }
+
+  modeSepBtn.addEventListener('click', showSepMode);
+  modeTotalBtn.addEventListener('click', showTotalMode);
+
+  calcBtn.addEventListener('click', calculate);
+  clearBtn.addEventListener('click', clearAll);
+  copyBtn.addEventListener('click', copyResult);
+  unitSelect.addEventListener('change', () => localStorage.setItem(UNIT_KEY, unitSelect.value));
+
+  const persistedUnit = localStorage.getItem(UNIT_KEY);
+  if (persistedUnit === 'kg' || persistedUnit === 'lb') {
+    unitSelect.value = persistedUnit;
+  }
+</script>

@@ -1,0 +1,25 @@
+---
+// Tool Calculator Component with modern styling
+import Card from '@/components/Card.astro';
+
+interface Props {
+  heading?: string;
+  description?: string;
+  action?: string;
+}
+
+const { heading, description, action = 'Calculate' } = Astro.props;
+---
+
+<Card hover gradient>
+  {heading && <h3 style="margin-top: 0; margin-bottom: 0.5rem;">{heading}</h3>}
+  {description && <p style="color: var(--color-text-secondary); margin-bottom: var(--space-lg);">{description}</p>}
+  
+  <form style="display: grid; gap: var(--space-lg);">
+    <div style="display: grid; gap: var(--space-md);">
+      <slot name="inputs" />
+    </div>
+    
+    <slot name="button" />
+  </form>
+</Card>

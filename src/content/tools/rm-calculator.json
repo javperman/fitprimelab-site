@@ -1,0 +1,25 @@
+{
+  "slug": {
+    "en": "rm-calculator",
+    "es": "calculadora-rm",
+    "pt": "calculadora-rm",
+    "ja": "rm-calculator"
+  },
+  "name": {
+    "en": "1RM Calculator — Estimate Your One Rep Max",
+    "es": "Calculadora 1RM — Calcula tu repetición máxima exacta",
+    "pt": "Calculadora 1RM — Estime sua repetição máxima",
+    "ja": "1RM計算機 — 最大挙上重量を正確に推定"
+  },
+  "description": {
+    "en": "Free 1RM calculator using Epley, Brzycki, Lombardi and a Hybrid formula. Get accurate one rep max estimates plus training load percentages for every rep range.",
+    "es": "Calculadora 1RM gratuita con fórmulas Epley, Brzycki, Lombardi e Híbrida. Obtén tu repetición máxima estimada y los porcentajes de carga para cada rango de reps.",
+    "pt": "Calculadora 1RM gratuita com fórmulas Epley, Brzycki, Lombardi e Híbrida. Estime sua repetição máxima e veja os percentuais de carga para cada faixa de reps.",
+    "ja": "Epley・Brzycki・Lombardi・ハイブリッド公式を使った無料1RM計算機。正確な最大挙上重量と、レップ範囲別のトレーニング%重量を一度に確認できます。"
+  },
+  "image": "/images/tools/rm-calculator.png",
+  "category": "strength",
+  "tags": ["strength", "rm", "1rm", "powerlifting", "weightlifting"],
+  "author": "Fit Prime Lab",
+  "updated": "2026-03-17"
+}

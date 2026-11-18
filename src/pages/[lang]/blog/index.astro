@@ -1,0 +1,105 @@
+---
+// Blog index page
+import { getAllLanguages } from '@/lib/i18n';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SEOHead from '@/components/SEOHead.astro';
+import type { Language } from '@/lib/i18n';
+
+export function getStaticPaths() {
+  return getAllLanguages().map((lang: Language) => ({
+    params: { lang },
+  }));
+}
+
+const { lang } = Astro.params as { lang: Language };
+
+const titles: Record<Language, string> = {
+  en: 'Fitness Blog & Guides',
+  es: 'Blog Fitness & Guías',
+  pt: 'Blog de Fitness & Guias',
+  ja: 'フィットネスブログとガイド',
+};
+
+const descriptions: Record<Language, string> = {
+  en: 'Expert fitness tips, workout guides, and science-backed training strategies.',
+  es: 'Consejos fitness expertos, guías de entrenamiento y estrategias de entrenamiento respaldadas por la ciencia.',
+  pt: 'Dicas de fitness especializadas, guias de treinamento e estratégias respaldadas por ciência.',
+  ja: '専門家のフィットネスのヒント、ワークアウトガイド、科学的根拠のあるトレーニング戦略。',
+};
+---
+
+<html lang={lang}>
+  <SEOHead
+    title={titles[lang]}
+    description={descriptions[lang]}
+    lang={lang}
+    type="website"
+  />
+  <body>
+    <BaseLayout title={titles[lang]} description={descriptions[lang]} lang={lang}>
+      <h1>{titles[lang]}</h1>
+      <p>{descriptions[lang]}</p>
+
+      <section style="margin-top: 2rem;">
+        <h2>
+          {lang === 'en'
+            ? 'Latest Articles'
+            : lang === 'es'
+              ? 'Últimos Artículos'
+              : lang === 'pt'
+                ? 'Artigos Recentes'
+                : '最新記事'}
+        </h2>
+        <p style="color: #666;">
+          {lang === 'en'
+            ? 'No articles published yet. Check back soon!'
+            : lang === 'es'
+              ? '¡Aún no hay artículos publicados. ¡Vuelve pronto!'
+              : lang === 'pt'
+                ? 'Nenhum artigo publicado ainda. Volte em breve!'
+                : 'まもなく公開予定。'}
+        </p>
+      </section>
+
+      <section style="margin-top: 2rem;">
+        <h2>
+          {lang === 'en'
+            ? 'Browse by Topic'
+            : lang === 'es'
+              ? 'Explorar por Tema'
+              : lang === 'pt'
+                ? 'Procurar por Tópico'
+                : 'トピック別に閲覧'}
+        </h2>
+        <ul>
+          <li>
+            <a href={`/${lang}/blog?tag=strength`}>
+              {lang === 'en'
+                ? 'Strength Training'
+                : lang === 'es'
+                  ? 'Entrenamiento de Fuerza'
+                  : lang === 'pt'
+                    ? 'Treinamento de Força'
+                    : '筋力トレーニング'}
+            </a>
+          </li>
+          <li>
+            <a href={`/${lang}/blog?tag=nutrition`}>
+              {lang === 'en' ? 'Nutrition' : lang === 'es' ? 'Nutrición' : lang === 'pt' ? 'Nutrição' : '栄養'}
+            </a>
+          </li>
+          <li>
+            <a href={`/${lang}/blog?tag=recovery`}>
+              {lang === 'en' ? 'Recovery' : lang === 'es' ? 'Recuperación' : lang === 'pt' ? 'Recuperação' : '回復'}
+            </a>
+          </li>
+          <li>
+            <a href={`/${lang}/blog?tag=health`}>
+              {lang === 'en' ? 'Health' : lang === 'es' ? 'Salud' : lang === 'pt' ? 'Saúde' : '健康'}
+            </a>
+          </li>
+        </ul>
+      </section>
+    </BaseLayout>
+  </body>
+</html>

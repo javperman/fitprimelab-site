@@ -1,0 +1,101 @@
+---
+// SEO Head Component
+import { generateMetaTags, generateCanonical, generateHreflang } from '@/lib/seo';
+import type { Language } from '@/lib/i18n';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: Language;
+  slugs?: Partial<Record<Language, string>>;
+  route?: string;
+  image?: string;
+  article?: {
+    datePublished: string;
+    dateModified?: string;
+    author: string;
+  };
+  type?: 'website' | 'article' | 'tool';
+}
+
+const {
+  title,
+  description,
+  lang,
+  slugs,
+  route,
+  image,
+  article,
+  type = 'website',
+} = Astro.props;
+
+const url = generateCanonical(Astro.url.pathname);
+const { title: metaTitle, description: metaDescription, ogTags, twitterTags } =
+  generateMetaTags({
+    title,
+    description,
+    url,
+    image,
+    type,
+    datePublished: article?.datePublished,
+    dateModified: article?.dateModified,
+    author: article?.author,
+  });
+
+let hreflangs: any = [];
+if (slugs && route) {
+  hreflangs = generateHreflang('https://fitprimelab.com', slugs, route);
+}
+---
+
+<head>
+  <!-- Basic Meta Tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{metaTitle}</title>
+  <meta name="description" content={metaDescription} />
+
+  <!-- Canonical -->
+  <link rel="canonical" href={url} />
+
+  <!-- Open Graph Tags -->
+  {ogTags.map((tag: any) => <meta property={tag.property} content={tag.content} />)}
+
+  <!-- Twitter Tags -->
+  {twitterTags.map((tag: any) => <meta name={tag.name} content={tag.content} />)}
+
+  <!-- Hreflang Tags -->
+  {
+    hreflangs.map((hrlang: any) => (
+      <link rel={hrlang.rel} hreflang={hrlang.hreflang} href={hrlang.href} />
+    ))
+  }
+
+  <!-- Article Meta Tags -->
+  {
+    article && (
+      <>
+        <meta property="article:published_time" content={article.datePublished} />
+        {article.dateModified && (
+          <meta property="article:modified_time" content={article.dateModified} />
+        )}
+        <meta property="article:author" content={article.author} />
+      </>
+    )
+  }
+
+  <!-- Additional -->
+  <meta name="robots" content="index, follow" />
+  <meta name="language" content={lang} />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DDELE7BQVL" is:inline></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-DDELE7BQVL');
+  </script>
+</head>

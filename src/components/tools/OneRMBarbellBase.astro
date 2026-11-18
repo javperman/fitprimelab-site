@@ -1,0 +1,484 @@
+---
+import Card from '@/components/Card.astro';
+import type { Language } from '@/lib/i18n';
+
+interface FAQ {
+  q: string;
+  a: string;
+}
+
+interface TextConfig {
+  h1: string;
+  subtitle: string;
+  unit: string;
+  weight: string;
+  reps: string;
+  rir: string;
+  rirHelp: string;
+  formula: string;
+  hybrid: string;
+  advancedSettings: string;
+  calculate: string;
+  copy: string;
+  copied: string;
+  results: string;
+  effectiveReps: string;
+  epley: string;
+  brzycki: string;
+  lombardi: string;
+  trainingTable: string;
+  percentage: string;
+  targetWeight: string;
+  classification: string;
+  bodyweightOptional: string;
+  classifyNote: string;
+  level: string;
+  ratio: string;
+  standardsTable: string;
+  standardsNote: string;
+  beginner: string;
+  novice: string;
+  intermediate: string;
+  advanced: string;
+  elite: string;
+  seeAlso: string;
+  goToRM: string;
+  goToTools: string;
+  faqTitle: string;
+  inputError: string;
+}
+
+interface BarbellConfig {
+  storageKey: string;
+  exercise: 'bench' | 'squat' | 'deadlift';
+  keyword: string;
+  siteName: string;
+  slugs: Record<Language, string>;
+  genericRM: Record<Language, string>;
+  toolsIndexLabel: Record<Language, string>;
+  related: ReadonlyArray<{ slug: Record<Language, string>; label: Record<Language, string> }>;
+  faqs: Record<Language, ReadonlyArray<FAQ>>;
+  texts: Record<Language, TextConfig>;
+}
+
+interface Props {
+  lang: Language;
+  config: BarbellConfig;
+}
+
+const { lang, config } = Astro.props;
+const t = config.texts[lang];
+const faqList = config.faqs[lang];
+---
+
+<Card hover gradient>
+  <h1 style="margin-top: 0; margin-bottom: 0.75rem;">{t.h1}</h1>
+  <p style="color: var(--color-text-secondary); margin-top: 0; margin-bottom: var(--space-lg);">{t.subtitle}</p>
+
+  <form id={`${config.storageKey}-form`} style="display: grid; gap: var(--space-md);">
+    <div style="display: flex; gap: var(--space-md); align-items: center; flex-wrap: wrap;">
+      <label for={`${config.storageKey}-unit`} style="font-size: 0.875rem; color: var(--color-text-secondary);">{t.unit}</label>
+      <select id={`${config.storageKey}-unit`} style="padding: 0.5rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;">
+        <option value="kg">kg</option>
+        <option value="lb">lb</option>
+      </select>
+    </div>
+
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+      <div style="display: grid; gap: 0.3rem;">
+        <label for={`${config.storageKey}-weight`} style="font-size: 0.875rem;">{t.weight}</label>
+        <input id={`${config.storageKey}-weight`} type="number" min="1" max="600" step="0.1" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;" />
+      </div>
+      <div style="display: grid; gap: 0.3rem;">
+        <label for={`${config.storageKey}-reps`} style="font-size: 0.875rem;">{t.reps}</label>
+        <input id={`${config.storageKey}-reps`} type="number" min="1" max="12" step="1" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;" />
+      </div>
+    </div>
+
+    <details style="border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.6);">
+      <summary style="cursor: pointer; font-size: 0.9375rem; font-weight: 600; color: var(--color-text-primary); user-select: none;">
+        {t.advancedSettings}
+      </summary>
+
+      <div style="display: grid; gap: var(--space-md); margin-top: var(--space-md);">
+        <div style="display: grid; gap: 0.25rem;">
+          <label for={`${config.storageKey}-rir`} style="font-size: 0.875rem; font-weight: 500;">{t.rir}</label>
+          <input id={`${config.storageKey}-rir`} type="number" min="0" max="20" step="1" value="0" placeholder="0" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; font-size: 1rem;" />
+          <small style="color: var(--color-text-secondary);">{t.rirHelp}</small>
+        </div>
+
+        <div style="display: grid; gap: 0.25rem;">
+          <label for={`${config.storageKey}-formula`} style="font-size: 0.875rem; font-weight: 500;">{t.formula}</label>
+          <select id={`${config.storageKey}-formula`} style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; font-size: 1rem;">
+            <option value="hybrid">{t.hybrid}</option>
+            <option value="epley">{t.epley}</option>
+            <option value="brzycki">{t.brzycki}</option>
+            <option value="lombardi">{t.lombardi}</option>
+          </select>
+        </div>
+      </div>
+    </details>
+
+    <div id={`${config.storageKey}-error`} style="display: none; padding: 0.75rem; border-left: 4px solid var(--color-orange); background: rgba(249,115,22,0.12); border-radius: 8px;"></div>
+
+    <button type="button" id={`${config.storageKey}-calculate`} style="padding: 0.875rem 1.5rem; background: linear-gradient(135deg, var(--color-green), var(--color-blue)); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+      {t.calculate}
+    </button>
+
+    <details style="border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.6); margin-top: var(--space-md);">
+      <summary style="cursor: pointer; font-size: 0.9375rem; font-weight: 600; color: var(--color-text-primary); user-select: none;">
+        {t.bodyweightOptional}
+      </summary>
+      <div style="display: grid; gap: 0.3rem; margin-top: var(--space-md);">
+        <input id={`${config.storageKey}-bw`} type="number" min="30" max="300" step="0.1" placeholder="80" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;" />
+        <small style="color: var(--color-text-secondary);">{t.classifyNote}</small>
+      </div>
+    </details>
+  </form>
+
+
+  <div id={`${config.storageKey}-results`} style="display: none; margin-top: var(--space-lg); padding-top: var(--space-lg); border-top: 1px solid rgba(0,0,0,0.08);">
+    <p style="margin: 0 0 0.5rem 0; color: var(--color-text-secondary); font-size: 0.875rem;">{t.results}</p>
+    <div style="display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap;">
+      <span id={`${config.storageKey}-avg`} data-value="0" style="font-size: 2.5rem; font-weight: 700; color: var(--color-green); opacity: 0; transition: opacity 0.3s ease;">0</span>
+      <span id={`${config.storageKey}-unit-label`} style="font-size: 1.25rem; color: var(--color-text-secondary); font-weight: 500;"></span>
+      <button type="button" id={`${config.storageKey}-copy`} style="margin-left: auto; border: 1px solid rgba(0,0,0,0.15); background: #fff; padding: 0.45rem 0.8rem; border-radius: 6px; cursor: pointer;">{t.copy}</button>
+    </div>
+
+    <p id={`${config.storageKey}-effective`} style="margin: 0.75rem 0; color: var(--color-text-secondary);"></p>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-sm);">
+      <div><strong>{t.epley}:</strong> <span id={`${config.storageKey}-epley`}></span></div>
+      <div><strong>{t.brzycki}:</strong> <span id={`${config.storageKey}-brzycki`}></span></div>
+      <div><strong>{t.lombardi}:</strong> <span id={`${config.storageKey}-lombardi`}></span></div>
+    </div>
+
+    <h3 style="margin-bottom: 0.5rem; margin-top: var(--space-lg);">{t.trainingTable}</h3>
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; min-width: 280px;">
+        <thead>
+          <tr style="background: rgba(0,0,0,0.03);">
+            <th style="padding: 0.55rem; text-align: left;">{t.percentage}</th>
+            <th style="padding: 0.55rem; text-align: left;">{t.targetWeight}</th>
+          </tr>
+        </thead>
+        <tbody id={`${config.storageKey}-pct-table`}></tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-bottom: 0.5rem; margin-top: var(--space-lg);">{t.classification}</h3>
+    <p id={`${config.storageKey}-class`} style="margin-top: 0;"></p>
+    <details open>
+      <summary>{t.standardsTable}</summary>
+      <small style="display: block; color: var(--color-text-secondary); margin-top: 0.5rem;">{t.standardsNote}</small>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 0.5rem;">
+        <thead>
+          <tr style="background: rgba(0,0,0,0.03);">
+            <th style="padding: 0.45rem; text-align: left;">{t.level}</th>
+            <th style="padding: 0.45rem; text-align: left;">{t.ratio}</th>
+          </tr>
+        </thead>
+        <tbody id={`${config.storageKey}-standards`}></tbody>
+      </table>
+    </details>
+  </div>
+
+  <section style="margin-top: var(--space-lg);">
+    <h2 style="margin-bottom: 0.5rem;">{t.faqTitle}</h2>
+    {faqList.map((item) => (
+      <details style="margin-bottom: 0.75rem;">
+        <summary>{item.q}</summary>
+        <p style="margin-top: 0.5rem; color: var(--color-text-secondary);">{item.a}</p>
+      </details>
+    ))}
+  </section>
+
+  <section style="margin-top: var(--space-lg);">
+    <h2 style="margin-bottom: 0.5rem;">{t.seeAlso}</h2>
+    <ul style="margin: 0; padding-left: 1.1rem;">
+      {config.related.map((item) => (
+        <li><a href={`/${lang}/tools/${item.slug[lang]}`}>{item.label[lang]}</a></li>
+      ))}
+      <li><a href={`/${lang}/tools/${config.genericRM[lang]}`}>{t.goToRM}</a></li>
+      <li><a href={`/${lang}/tools`}>{config.toolsIndexLabel[lang]}</a></li>
+    </ul>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: t.h1,
+    applicationCategory: 'HealthApplication',
+    operatingSystem: 'Web',
+    description: t.subtitle,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    url: `https://fitprimelab.com/${lang}/tools/${config.slugs[lang]}`,
+  })} />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqList.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  })} />
+</Card>
+
+<script define:vars={{ lang, config }}>
+  const t = config.texts[lang];
+  const unitEl = document.getElementById(`${config.storageKey}-unit`);
+  const bwOptionalEl = document.getElementById(`${config.storageKey}-bw`);
+  const weightEl = document.getElementById(`${config.storageKey}-weight`);
+  const repsEl = document.getElementById(`${config.storageKey}-reps`);
+  const rirEl = document.getElementById(`${config.storageKey}-rir`);
+  const formulaEl = document.getElementById(`${config.storageKey}-formula`);
+  const calcBtn = document.getElementById(`${config.storageKey}-calculate`);
+  const errorEl = document.getElementById(`${config.storageKey}-error`);
+  const resultWrap = document.getElementById(`${config.storageKey}-results`);
+  const avgEl = document.getElementById(`${config.storageKey}-avg`);
+  const unitLabelEl = document.getElementById(`${config.storageKey}-unit-label`);
+  const effectiveEl = document.getElementById(`${config.storageKey}-effective`);
+  const copyBtn = document.getElementById(`${config.storageKey}-copy`);
+
+  const fields = [weightEl, repsEl];
+
+  const ratios = {
+    bench: [0.6, 0.9, 1.25, 1.6, 1.95],
+    squat: [0.8, 1.1, 1.5, 1.9, 2.3],
+    deadlift: [1, 1.35, 1.8, 2.2, 2.6],
+  };
+
+  const categories = [t.beginner, t.novice, t.intermediate, t.advanced, t.elite];
+
+  function toKg(value, unit) {
+    return unit === 'lb' ? value * 0.45359237 : value;
+  }
+
+  function fromKg(value, unit) {
+    return unit === 'lb' ? value / 0.45359237 : value;
+  }
+
+  function validateField(field) {
+    if (!field) return true;
+    const value = Number(field.value);
+    if (!field.value) return true;
+    const min = field.min ? Number(field.min) : -Infinity;
+    const max = field.max ? Number(field.max) : Infinity;
+    const valid = Number.isFinite(value) && value >= min && value <= max;
+    field.style.borderColor = valid ? 'rgba(0,0,0,0.1)' : 'var(--color-orange)';
+    return valid;
+  }
+
+  function epley(w, r) {
+    if (r <= 1) return w;
+    return w * (1 + r / 30);
+  }
+
+  function brzycki(w, r) {
+    if (r <= 1) return w;
+    return w * (36 / (37 - r));
+  }
+
+  function lombardi(w, r) {
+    if (r <= 1) return w;
+    return w * Math.pow(r, 0.1);
+  }
+
+  function hybrid(w, r) {
+    if (r <= 1) return w;
+    const ep = epley(w, r);
+    const brz = brzycki(w, r);
+    const lom = lombardi(w, r);
+
+    let wEpley = Math.max(0, 1 - (r - 2) / 10);
+    let wBrzycki = 1 - Math.abs(r - 8) / 8;
+    let wLombardi = (r - 2) / 12;
+
+    const sum = wEpley + wBrzycki + wLombardi;
+    return (ep * (wEpley / sum)) + (brz * (wBrzycki / sum)) + (lom * (wLombardi / sum));
+  }
+
+  function classify(oneRmKg, bodyweightKg) {
+    const ratio = oneRmKg / bodyweightKg;
+    const arr = ratios[config.exercise];
+    if (ratio < arr[0]) return { label: categories[0], ratio };
+    if (ratio < arr[1]) return { label: categories[1], ratio };
+    if (ratio < arr[2]) return { label: categories[2], ratio };
+    if (ratio < arr[3]) return { label: categories[3], ratio };
+    return { label: categories[4], ratio };
+  }
+
+  function renderStandards(unit) {
+    const tbody = document.getElementById(`${config.storageKey}-standards`);
+    const ratioValues = ratios[config.exercise];
+    tbody.innerHTML = '';
+    ratioValues.forEach((value, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td style="padding:0.45rem; border-top:1px solid rgba(0,0,0,0.08);">${categories[index]}</td><td style="padding:0.45rem; border-top:1px solid rgba(0,0,0,0.08);">~${value.toFixed(2)}x BW</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderPercentages(avgKg, unit) {
+    const tbody = document.getElementById(`${config.storageKey}-pct-table`);
+    tbody.innerHTML = '';
+    for (let pct = 50; pct <= 100.001; pct += 2.5) {
+      const row = document.createElement('tr');
+      const weight = fromKg(avgKg * (pct / 100), unit);
+      row.innerHTML = `<td style="padding:0.45rem; border-top:1px solid rgba(0,0,0,0.08);">${pct.toFixed(1)}%</td><td style="padding:0.45rem; border-top:1px solid rgba(0,0,0,0.08);">${weight.toFixed(1)} ${unit}</td>`;
+      tbody.appendChild(row);
+    }
+  }
+
+  const saved = localStorage.getItem(config.storageKey);
+  unitEl.value = saved === 'lb' || saved === 'kg' ? saved : (lang === 'en' ? 'lb' : 'kg');
+
+  fields.forEach((field) => {
+    if (!field) return;
+    field.addEventListener('blur', () => validateField(field));
+  });
+
+  unitEl.addEventListener('change', () => {
+    localStorage.setItem(config.storageKey, unitEl.value);
+  });
+
+  // ==================== ANIMATION ====================
+  function animateNumber(element, end, isSameValue = false, duration = 500) {
+    const startValue = parseFloat(element.textContent) || 0;
+    let startTime = null;
+
+    element.style.transition = 'none';
+
+    if (isSameValue) {
+      element.style.opacity = '0';
+      element.style.transform = 'scale(0.2) rotate(-90deg)';
+    } else {
+      element.style.opacity = '0';
+      element.style.transform = 'scale(1) translateY(10px)';
+    }
+
+    const step = (currentTime) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+
+      element.style.opacity = easeOut;
+
+      if (isSameValue) {
+        let scale;
+        if (easeOut < 0.6) {
+          scale = 0.2 + easeOut / 0.6 * 1.0;
+        } else {
+          const bounce = Math.sin((easeOut - 0.6) / 0.4 * Math.PI) * 0.15;
+          scale = 1.2 - 0.2 * ((easeOut - 0.6) / 0.4) + bounce;
+        }
+        const rotation = easeOut * 360;
+        element.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+      } else {
+        const translateY = 10 * (1 - easeOut);
+        element.style.transform = `scale(1) translateY(${translateY}px)`;
+      }
+
+      if (progress < 1) {
+        const current = (startValue + (end - startValue) * progress).toFixed(1);
+        element.textContent = current;
+        requestAnimationFrame(step);
+      } else {
+        element.textContent = end.toFixed(1);
+        element.style.opacity = '1';
+        if (isSameValue) {
+          element.style.transform = 'scale(1) rotate(360deg)';
+        } else {
+          element.style.transform = 'scale(1) translateY(0px)';
+        }
+      }
+    };
+
+    requestAnimationFrame(step);
+  }
+
+  renderStandards(unitEl.value);
+
+  calcBtn.addEventListener('click', () => {
+    const unit = unitEl.value;
+    const weight = Number(weightEl.value);
+    const reps = Number(repsEl.value);
+    const rir = rirEl.value ? Number(rirEl.value) : 0;
+    const formula = formulaEl.value;
+    const bwOptional = bwOptionalEl.value ? Number(bwOptionalEl.value) : null;
+
+    const valid = [weightEl, repsEl].every(validateField);
+    if (!valid || !Number.isFinite(weight) || !Number.isFinite(reps) || reps < 1 || reps > 12) {
+      errorEl.style.display = 'block';
+      errorEl.textContent = t.inputError;
+      resultWrap.style.display = 'none';
+      return;
+    }
+
+    errorEl.style.display = 'none';
+    const effectiveReps = reps + rir;
+    const weightKg = toKg(weight, unit);
+
+    let result;
+    if (formula === 'hybrid') {
+      result = hybrid(weightKg, effectiveReps);
+    } else if (formula === 'epley') {
+      result = epley(weightKg, effectiveReps);
+    } else if (formula === 'brzycki') {
+      result = brzycki(weightKg, effectiveReps);
+    } else {
+      result = lombardi(weightKg, effectiveReps);
+    }
+
+    const resultDisplay = fromKg(result, unit);
+
+    // Animate the result value
+    const previousValue = parseFloat(avgEl.getAttribute('data-value') || '0');
+    const currentValue = Math.round(resultDisplay * 10) / 10;
+    const isSameValue = previousValue === currentValue && previousValue !== 0;
+    avgEl.setAttribute('data-value', currentValue.toString());
+
+    animateNumber(avgEl, resultDisplay, isSameValue, 500);
+    unitLabelEl.textContent = unit;
+    effectiveEl.textContent = `${t.effectiveReps}: ${effectiveReps.toFixed(1)}`;
+
+    if (formula === 'hybrid') {
+      const ep = epley(weightKg, effectiveReps);
+      const brz = brzycki(weightKg, effectiveReps);
+      const lom = lombardi(weightKg, effectiveReps);
+      document.getElementById(`${config.storageKey}-epley`).textContent = `${fromKg(ep, unit).toFixed(1)} ${unit}`;
+      document.getElementById(`${config.storageKey}-brzycki`).textContent = `${fromKg(brz, unit).toFixed(1)} ${unit}`;
+      document.getElementById(`${config.storageKey}-lombardi`).textContent = `${fromKg(lom, unit).toFixed(1)} ${unit}`;
+    } else {
+      document.getElementById(`${config.storageKey}-epley`).textContent = formula === 'epley' ? `${resultDisplay.toFixed(1)} ${unit}` : '-';
+      document.getElementById(`${config.storageKey}-brzycki`).textContent = formula === 'brzycki' ? `${resultDisplay.toFixed(1)} ${unit}` : '-';
+      document.getElementById(`${config.storageKey}-lombardi`).textContent = formula === 'lombardi' ? `${resultDisplay.toFixed(1)} ${unit}` : '-';
+    }
+
+    if (bwOptional) {
+      const bwKg = toKg(bwOptional, unit);
+      const classification = classify(result, bwKg);
+      document.getElementById(`${config.storageKey}-class`).textContent = `${classification.label} (${classification.ratio.toFixed(2)}x BW)`;
+    } else {
+      document.getElementById(`${config.storageKey}-class`).textContent = '-';
+    }
+
+    renderPercentages(result, unit);
+    renderStandards(unit);
+
+    copyBtn.textContent = t.copy;
+    copyBtn.onclick = async () => {
+      const text = `${t.h1}: ${resultDisplay.toFixed(1)} ${unit}`;
+      await navigator.clipboard.writeText(text);
+      copyBtn.textContent = t.copied;
+      setTimeout(() => {
+        copyBtn.textContent = t.copy;
+      }, 1500);
+    };
+
+    resultWrap.style.display = 'block';
+  });
+</script>

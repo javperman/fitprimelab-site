@@ -1,0 +1,21 @@
+---
+// Centered container with consistent max-width
+interface Props {
+  maxWidth?: string;
+  class?: string;
+}
+
+const { maxWidth = '1100px', class: className = '' } = Astro.props;
+---
+
+<div class={`container ${className}`} style={`max-width: ${maxWidth}`}>
+  <slot />
+</div>
+
+<style scoped>
+  .container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+  }
+</style>

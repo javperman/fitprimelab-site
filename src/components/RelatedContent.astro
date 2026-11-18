@@ -1,0 +1,46 @@
+---
+import Card from './Card.astro';
+
+// Related Content Component
+interface Props {
+  type: 'blog' | 'tools';
+  items: Array<{
+    title: string;
+    description?: string;
+    href: string;
+    image?: string;
+  }>;
+  heading?: string;
+}
+
+const {
+  type,
+  items,
+  heading = type === 'blog' ? 'Related Blog Posts' : 'Related Tools',
+} = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <section style="margin-bottom: var(--space-xl);">
+      <h2>{heading}</h2>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-lg);">
+        {items.map((item) => (
+          <Card>
+            <h4 style="margin-top: 0; margin-bottom: 0.5rem;">
+              <a href={item.href} style="color: var(--color-green); text-decoration: none;">
+                {item.title}
+              </a>
+            </h4>
+            {item.description && (
+              <p style="margin: 0.5rem 0 0 0; color: var(--color-text-secondary); line-height: 1.6;">
+                {item.description}
+              </p>
+            )}
+          </Card>
+        ))}
+      </div>
+    </section>
+  )
+}

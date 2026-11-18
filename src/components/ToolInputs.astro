@@ -1,0 +1,49 @@
+---
+// Tool Inputs Component
+interface Props {
+  id: string;
+  label: string;
+  type?: 'number' | 'text' | 'select';
+  placeholder?: string;
+  value?: string | number;
+  options?: Array<{ value: string; label: string }>;
+  required?: boolean;
+}
+
+const {
+  id,
+  label,
+  type = 'number',
+  placeholder = '',
+  value = '',
+  options = [],
+  required = false,
+} = Astro.props;
+---
+
+<div style="margin-bottom: 1.5rem;">
+  <label for={id} style="display: block; margin-bottom: 0.5rem; font-weight: 500;">
+    {label}
+    {required && <span style="color: red;">*</span>}
+  </label>
+
+  {type === 'select' ? (
+    <select id={id} required={required} style="width: 100%; padding: 0.5rem;">
+      <option value="">{placeholder}</option>
+      {options.map((opt) => (
+        <option value={opt.value} selected={value === opt.value}>
+          {opt.label}
+        </option>
+      ))}
+    </select>
+  ) : (
+    <input
+      id={id}
+      type={type}
+      placeholder={placeholder}
+      value={value}
+      required={required}
+      style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;"
+    />
+  )}
+</div>

@@ -1,0 +1,354 @@
+---
+import Card from '@/components/Card.astro';
+import type { Language } from '@/lib/i18n';
+import type { Tool } from '@/lib/tools';
+
+interface LinkItem {
+  href: string;
+  label: string;
+}
+
+interface Props {
+  lang: Language;
+  tool: Tool;
+  calculatorKey: string;
+  exercise: 'bench' | 'squat' | 'deadlift';
+  t: Record<string, string>;
+  relatedLinks: LinkItem[];
+  variantOptions: { value: string; label: string }[];
+  faq: Array<{ q: string; a: string }>;
+}
+
+const { lang, tool, calculatorKey, exercise, t, relatedLinks, variantOptions, faq } = Astro.props;
+
+const appSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: tool.name[lang],
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  inLanguage: lang,
+  description: tool.description[lang],
+  url: `https://fitprimelab.com/${lang}/tools/${tool.slug[lang]}`
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.a
+    }
+  }))
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(appSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+<section style="margin-bottom: var(--space-xl);">
+  <h1 style="margin-top: 0; margin-bottom: var(--space-md);">{t.h1}</h1>
+  <p style="color: var(--color-text-secondary); margin-top: 0;">{t.subtitle}</p>
+</section>
+
+<Card hover gradient>
+  <form id={`${calculatorKey}-form`} style="display: grid; gap: var(--space-md);">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm);">
+      <div style="display: grid; gap: 0.25rem;">
+        <label for={`${calculatorKey}-unit`} style="font-size: 0.875rem; font-weight: 500;">{t.unit}</label>
+        <select id={`${calculatorKey}-unit`} style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;">
+          <option value="kg">kg</option>
+          <option value="lb">lb</option>
+        </select>
+      </div>
+      <div style="display: grid; gap: 0.25rem;">
+        <label for={`${calculatorKey}-sex`} style="font-size: 0.875rem; font-weight: 500;">{t.sex}</label>
+        <select id={`${calculatorKey}-sex`} style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;">
+          <option value="male">{t.male}</option>
+          <option value="female">{t.female}</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm);">
+      <div style="display: grid; gap: 0.25rem;">
+        <label for={`${calculatorKey}-weight`} style="font-size: 0.875rem; font-weight: 500;">{t.weightLifted}</label>
+        <input id={`${calculatorKey}-weight`} type="number" min="0" step="0.1" placeholder="100" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;" />
+      </div>
+      <div style="display: grid; gap: 0.25rem;">
+        <label for={`${calculatorKey}-bw`} style="font-size: 0.875rem; font-weight: 500;">{t.bodyweight}</label>
+        <input id={`${calculatorKey}-bw`} type="number" min="0" step="0.1" placeholder="80" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;" />
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm);">
+      <div style="display: grid; gap: 0.25rem;">
+        <label for={`${calculatorKey}-reps`} style="font-size: 0.875rem; font-weight: 500;">{t.reps}</label>
+        <input id={`${calculatorKey}-reps`} type="number" min="1" max="12" step="1" placeholder="5" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;" />
+      </div>
+      <div style="display: grid; gap: 0.25rem;">
+        <label for={`${calculatorKey}-rpe`} style="font-size: 0.875rem; font-weight: 500;">{t.rpeOptional}</label>
+        <input id={`${calculatorKey}-rpe`} type="number" min="6.5" max="10" step="0.5" placeholder="9" style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;" />
+      </div>
+    </div>
+
+    <div style="display: grid; gap: 0.25rem;">
+      <label for={`${calculatorKey}-variant`} style="font-size: 0.875rem; font-weight: 500;">{t.variantLabel}</label>
+      <select id={`${calculatorKey}-variant`} style="padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px;">
+        {variantOptions.map((option) => (
+          <option value={option.value}>{option.label}</option>
+        ))}
+      </select>
+      <small style="color: var(--color-text-secondary);">{t.variantInfo}</small>
+    </div>
+
+    <p id={`${calculatorKey}-error`} style="display: none; margin: 0; color: #b91c1c; background: #fee2e2; padding: 0.75rem; border-radius: 6px;"></p>
+
+    <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+      <button type="button" id={`${calculatorKey}-calc`} style="padding: 0.875rem 1.25rem; background: linear-gradient(135deg, var(--color-green), var(--color-blue)); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">{t.calculate}</button>
+      <button type="button" id={`${calculatorKey}-clear`} style="padding: 0.875rem 1.25rem; background: #fff; color: var(--color-text-primary); border: 1px solid rgba(0,0,0,0.16); border-radius: 6px; font-weight: 600; cursor: pointer;">{t.clear}</button>
+    </div>
+  </form>
+
+  <div id={`${calculatorKey}-result`} style="display: none; margin-top: var(--space-lg); padding-top: var(--space-lg); border-top: 1px solid rgba(0,0,0,0.08);">
+    <h3 style="margin-top: 0;">{t.resultTitle}</h3>
+    <p style="margin: 0 0 0.5rem;"><strong>{t.average1rm}:</strong> <span id={`${calculatorKey}-avg`}>0</span> <span id={`${calculatorKey}-unit-label`}>kg</span></p>
+    <p style="margin: 0 0 0.5rem;"><strong>{t.classification}:</strong> <span id={`${calculatorKey}-class`}>-</span></p>
+
+    <div style="display: grid; gap: 0.4rem; margin-top: var(--space-sm);">
+      <p style="margin: 0;"><strong>Epley:</strong> <span id={`${calculatorKey}-epley`}>0</span></p>
+      <p style="margin: 0;"><strong>Brzycki:</strong> <span id={`${calculatorKey}-brzycki`}>0</span></p>
+      <p style="margin: 0;"><strong>Lombardi:</strong> <span id={`${calculatorKey}-lombardi`}>0</span></p>
+      <p style="margin: 0;"><strong>O'Conner:</strong> <span id={`${calculatorKey}-oconner`}>0</span></p>
+    </div>
+
+    <button type="button" id={`${calculatorKey}-copy`} style="margin-top: var(--space-md); padding: 0.625rem 1rem; border: 1px solid rgba(0,0,0,0.18); background: white; border-radius: 6px; cursor: pointer;">{t.copyResult}</button>
+    <span id={`${calculatorKey}-copy-msg`} style="margin-left: 0.5rem; color: var(--color-green); font-size: 0.875rem; display: none;">{t.copied}</span>
+
+    <div style="margin-top: var(--space-lg); overflow-x: auto;">
+      <h4 style="margin-top: 0;">{t.percentTableTitle}</h4>
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background: rgba(0,0,0,0.03);">
+            <th style="padding: 0.55rem; text-align: left;">%</th>
+            <th style="padding: 0.55rem; text-align: left;">{t.weightColumn}</th>
+          </tr>
+        </thead>
+        <tbody id={`${calculatorKey}-percent-body`}></tbody>
+      </table>
+    </div>
+  </div>
+</Card>
+
+<section style="margin-top: var(--space-lg);">
+  <details open>
+    <summary style="font-weight: 700; cursor: pointer;">{t.standardsTitle}</summary>
+    <p style="margin-top: 0.75rem; color: var(--color-text-secondary);">{t.standardsIntro}</p>
+    <table style="width: 100%; border-collapse: collapse;">
+      <tbody>
+        <tr><td style="padding: 0.45rem; border-bottom: 1px solid rgba(0,0,0,0.08);">{t.beginner}</td><td style="padding: 0.45rem; border-bottom: 1px solid rgba(0,0,0,0.08);">{t.beginnerRange}</td></tr>
+        <tr><td style="padding: 0.45rem; border-bottom: 1px solid rgba(0,0,0,0.08);">{t.novice}</td><td style="padding: 0.45rem; border-bottom: 1px solid rgba(0,0,0,0.08);">{t.noviceRange}</td></tr>
+        <tr><td style="padding: 0.45rem; border-bottom: 1px solid rgba(0,0,0,0.08);">{t.intermediate}</td><td style="padding: 0.45rem; border-bottom: 1px solid rgba(0,0,0,0.08);">{t.intermediateRange}</td></tr>
+        <tr><td style="padding: 0.45rem; border-bottom: 1px solid rgba(0,0,0,0.08);">{t.advanced}</td><td style="padding: 0.45rem; border-bottom: 1px solid rgba(0,0,0,0.08);">{t.advancedRange}</td></tr>
+        <tr><td style="padding: 0.45rem;">{t.elite}</td><td style="padding: 0.45rem;">{t.eliteRange}</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<section style="margin-top: var(--space-lg);">
+  <h2 style="margin-top: 0;">{t.faqTitle}</h2>
+  <div style="display: grid; gap: var(--space-md);">
+    {faq.map((item) => (
+      <details>
+        <summary style="font-weight: 600;">{item.q}</summary>
+        <p>{item.a}</p>
+      </details>
+    ))}
+  </div>
+</section>
+
+<section style="margin-top: var(--space-lg);">
+  <h3 style="margin-top: 0;">{t.linksTitle}</h3>
+  <ul style="padding-left: 1rem; margin: 0; display: grid; gap: 0.4rem;">
+    {relatedLinks.map((link) => (
+      <li><a href={link.href}>{link.label}</a></li>
+    ))}
+  </ul>
+</section>
+
+<script define:vars={{ calculatorKey, exercise, t }}>
+  const unitSelect = document.getElementById(`${calculatorKey}-unit`);
+  const sexSelect = document.getElementById(`${calculatorKey}-sex`);
+  const weightInput = document.getElementById(`${calculatorKey}-weight`);
+  const bodyweightInput = document.getElementById(`${calculatorKey}-bw`);
+  const repsInput = document.getElementById(`${calculatorKey}-reps`);
+  const rpeInput = document.getElementById(`${calculatorKey}-rpe`);
+  const calcBtn = document.getElementById(`${calculatorKey}-calc`);
+  const clearBtn = document.getElementById(`${calculatorKey}-clear`);
+  const errorBox = document.getElementById(`${calculatorKey}-error`);
+  const resultBox = document.getElementById(`${calculatorKey}-result`);
+  const unitLabel = document.getElementById(`${calculatorKey}-unit-label`);
+  const avgNode = document.getElementById(`${calculatorKey}-avg`);
+  const classNode = document.getElementById(`${calculatorKey}-class`);
+  const epleyNode = document.getElementById(`${calculatorKey}-epley`);
+  const brzyckiNode = document.getElementById(`${calculatorKey}-brzycki`);
+  const lombardiNode = document.getElementById(`${calculatorKey}-lombardi`);
+  const oconnerNode = document.getElementById(`${calculatorKey}-oconner`);
+  const percentBody = document.getElementById(`${calculatorKey}-percent-body`);
+  const copyBtn = document.getElementById(`${calculatorKey}-copy`);
+  const copyMsg = document.getElementById(`${calculatorKey}-copy-msg`);
+
+  const UNIT_KEY = `${calculatorKey}_unit`;
+
+  const toKg = (v, unit) => (unit === 'lb' ? v * 0.45359237 : v);
+  const fromKg = (v, unit) => (unit === 'lb' ? v / 0.45359237 : v);
+
+  function showError(message) {
+    errorBox.textContent = message;
+    errorBox.style.display = 'block';
+  }
+
+  function clearError() {
+    errorBox.textContent = '';
+    errorBox.style.display = 'none';
+  }
+
+  function formulas(weight, reps) {
+    const epley = weight * (1 + reps / 30);
+    const brzycki = weight * (36 / (37 - reps));
+    const lombardi = weight * Math.pow(reps, 0.1);
+    const oconner = weight * (1 + reps / 40);
+    const avg = (epley + brzycki + lombardi + oconner) / 4;
+    return { epley, brzycki, lombardi, oconner, avg };
+  }
+
+  function getThresholds(exerciseName, sex) {
+    const map = {
+      bench: {
+        male: [0.75, 1.0, 1.25, 1.5],
+        female: [0.5, 0.7, 0.9, 1.15]
+      },
+      squat: {
+        male: [1.0, 1.3, 1.6, 2.0],
+        female: [0.8, 1.1, 1.4, 1.8]
+      },
+      deadlift: {
+        male: [1.2, 1.6, 2.0, 2.4],
+        female: [1.0, 1.3, 1.6, 2.0]
+      }
+    };
+    return map[exerciseName][sex];
+  }
+
+  function classify(avgKg, bwKg, exerciseName, sex) {
+    const ratio = avgKg / bwKg;
+    const [a, b, c, d] = getThresholds(exerciseName, sex);
+    if (ratio < a) return t.beginner;
+    if (ratio < b) return t.novice;
+    if (ratio < c) return t.intermediate;
+    if (ratio < d) return t.advanced;
+    return t.elite;
+  }
+
+  function buildPercentTable(avgKg, unit) {
+    percentBody.innerHTML = '';
+    for (let pct = 50; pct <= 100; pct += 2.5) {
+      const weight = fromKg(avgKg * (pct / 100), unit).toFixed(1);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td style="padding:0.45rem; border-bottom:1px solid rgba(0,0,0,0.08);">${pct.toFixed(1)}%</td><td style="padding:0.45rem; border-bottom:1px solid rgba(0,0,0,0.08);">${weight} ${unit}</td>`;
+      percentBody.appendChild(tr);
+    }
+  }
+
+  function calculate() {
+    clearError();
+
+    const unit = unitSelect.value;
+    const sex = sexSelect.value;
+    const weightRaw = Number(weightInput.value || 0);
+    const bodyweightRaw = Number(bodyweightInput.value || 0);
+    const reps = Number(repsInput.value || 0);
+    const rpe = rpeInput.value ? Number(rpeInput.value) : null;
+
+    if (weightRaw <= 0 || bodyweightRaw <= 0 || reps < 1 || reps > 12) {
+      showError(t.errorRequired);
+      return;
+    }
+
+    if (rpe !== null && (rpe < 6.5 || rpe > 10)) {
+      showError(t.errorRpe);
+      return;
+    }
+
+    const weightKg = toKg(weightRaw, unit);
+    const bodyweightKg = toKg(bodyweightRaw, unit);
+    const effectiveReps = rpe !== null ? reps + (10 - rpe) : reps;
+    const calc = formulas(weightKg, effectiveReps);
+
+    avgNode.textContent = fromKg(calc.avg, unit).toFixed(1);
+    epleyNode.textContent = fromKg(calc.epley, unit).toFixed(1);
+    brzyckiNode.textContent = fromKg(calc.brzycki, unit).toFixed(1);
+    lombardiNode.textContent = fromKg(calc.lombardi, unit).toFixed(1);
+    oconnerNode.textContent = fromKg(calc.oconner, unit).toFixed(1);
+    classNode.textContent = classify(calc.avg, bodyweightKg, exercise, sex);
+    unitLabel.textContent = unit;
+    buildPercentTable(calc.avg, unit);
+    resultBox.style.display = 'block';
+  }
+
+  function clearAll() {
+    weightInput.value = '';
+    bodyweightInput.value = '';
+    repsInput.value = '';
+    rpeInput.value = '';
+    clearError();
+    resultBox.style.display = 'none';
+    percentBody.innerHTML = '';
+  }
+
+  function copyResult() {
+    const text = `${t.average1rm}: ${avgNode.textContent} ${unitLabel.textContent} | ${t.classification}: ${classNode.textContent}`;
+    navigator.clipboard.writeText(text).then(() => {
+      copyMsg.style.display = 'inline';
+      setTimeout(() => {
+        copyMsg.style.display = 'none';
+      }, 1500);
+    });
+  }
+
+  [weightInput, bodyweightInput, repsInput].forEach((input) => {
+    input.addEventListener('blur', () => {
+      if (input.value && Number(input.value) <= 0) {
+        showError(t.errorPositive);
+      } else if (errorBox.textContent === t.errorPositive) {
+        clearError();
+      }
+    });
+  });
+
+  rpeInput.addEventListener('blur', () => {
+    if (!rpeInput.value) return;
+    const rpe = Number(rpeInput.value);
+    if (rpe < 6.5 || rpe > 10) {
+      showError(t.errorRpe);
+    } else if (errorBox.textContent === t.errorRpe) {
+      clearError();
+    }
+  });
+
+  calcBtn.addEventListener('click', calculate);
+  clearBtn.addEventListener('click', clearAll);
+  copyBtn.addEventListener('click', copyResult);
+  unitSelect.addEventListener('change', () => {
+    localStorage.setItem(UNIT_KEY, unitSelect.value);
+  });
+
+  const persistedUnit = localStorage.getItem(UNIT_KEY);
+  if (persistedUnit === 'kg' || persistedUnit === 'lb') {
+    unitSelect.value = persistedUnit;
+  }
+</script>

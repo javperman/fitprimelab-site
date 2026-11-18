@@ -1,0 +1,22 @@
+{
+  "slug": {
+    "en": "pull-up-1rm-calculator",
+    "es": "calculadora-1rm-dominadas",
+    "pt": "calculadora-1rm-barra-fixa",
+    "ja": "kenju-1rm-keisanki"
+  },
+  "name": {
+    "en": "Weighted Pull-up 1RM Calculator — Your Max",
+    "es": "Calculadora 1RM Dominadas con Lastre — Tu máximo",
+    "pt": "Calculadora 1RM Barra Fixa com Peso — Seu máximo",
+    "ja": "加重懸垂 1RM 計算機 — 最大重量を正確に推定"
+  },
+  "description": {
+    "en": "Free weighted pull-up 1RM calculator using four validated formulas. Estimate total-load and added-weight max plus bodyweight-relative strength rating for accurate progress tracking.",
+    "es": "Calculadora 1RM gratuita de dominadas con lastre con cuatro fórmulas validadas. Estima carga total y máximo con peso añadido, más clasificación relativa al peso corporal para seguir tu progreso.",
+    "pt": "Calculadora 1RM gratuita de barra fixa com peso e quatro fórmulas validadas. Estime carga total e máximo com peso adicional, com classificação relativa ao peso corporal para acompanhar evolução.",
+    "ja": "検証済みの4公式を使った無料の加重懸垂1RM計算機。総負荷と追加重量の最大値、体重比による強度評価を確認でき、進捗を正確に追えます。"
+  },
+  "category": "strength",
+  "tags": ["strength", "1rm", "pull-up", "calisthenics", "weighted"]
+}
